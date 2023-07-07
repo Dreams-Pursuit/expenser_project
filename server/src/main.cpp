@@ -25,7 +25,8 @@ int main() {
     CROW_ROUTE(app, "/")([]() {
         return "Hello world 22";
     });
-    AuthRoutes::getRoutes(app,db);
+    AuthRoutes authr;
+    authr.getRoutes(app,db);
     app.port(18080).multithreaded().run();
     return 0;
 }

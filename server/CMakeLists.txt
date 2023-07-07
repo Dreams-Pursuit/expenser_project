@@ -23,7 +23,10 @@ endif()
 
 add_subdirectory(libs)
 add_executable(ExpenserServer src/main.cpp)
+
 target_include_directories(ExpenserServer PUBLIC ${INCLUDE_PATHS})
+# add_subdirectory(src/routes)
+
 # target_link_libraries(ExpenserServer libs/cpp-dotenv/include)
 target_link_libraries(ExpenserServer 
     PRIVATE 
@@ -39,4 +42,5 @@ target_link_libraries(ExpenserServer
 target_sources(ExpenserServer 
     PRIVATE 
         src/main.cpp 
+        src/routes/auth/auth.cpp
 )

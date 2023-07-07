@@ -1,3 +1,5 @@
+#define CROW_JSON_USE_MAP
+
 #pragma once
 
 #include "crow.h"
@@ -7,7 +9,8 @@
 #include <string>
 class AuthRoutes {
 public:
-    static void getRoutes(crow::SimpleApp& app, sqlpp::postgresql::connection& db);
+    void getRoutes(crow::SimpleApp& app, sqlpp::postgresql::connection& db);
 private:
     static bool verifyPassword(std::string password, std::string originalHash);
 };
+
