@@ -1,6 +1,7 @@
 #include <iostream>
 #include "crow.h"
 
+#include "routes/auth/auth.h"
 #include <sqlpp11/postgresql/connection.h>
 #include <sqlpp11/postgresql/exception.h>
 #include <sqlpp11/sqlpp11.h>
@@ -24,7 +25,7 @@ int main() {
     CROW_ROUTE(app, "/")([]() {
         return "Hello world 22";
     });
-
+    AuthRoutes::getRoutes(app,db);
     app.port(18080).multithreaded().run();
     return 0;
 }
