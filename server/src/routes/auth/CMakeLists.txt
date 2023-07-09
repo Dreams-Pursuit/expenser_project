@@ -1,2 +1,1 @@
-# target_sources(ExpenserServer PUBLIC auth.cpp)
-
+target_sources(ExpenserServer PRIVATE routes/auth/auth.cpp)
