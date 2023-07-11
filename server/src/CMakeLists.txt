@@ -1,9 +1,13 @@
 set(INCLUDE_PATHS /usr/local/Cellar/boost/
  /usr/local/Cellar/boost/include
  /usr/local/Cellar/libpq/15.3_1/include
+ /usr/local/include
  ${PROJECT_SOURCE_DIR}/libs/crow/include
  ${PROJECT_SOURCE_DIR}/libs/sqlpp11
- ${PROJECT_SOURCE_DIR}/libs/ /usr/local/include)
+ ${PROJECT_SOURCE_DIR}/libs/cryptopp
+ ${PROJECT_SOURCE_DIR}/libs/ 
+ )
+
 
 add_executable(ExpenserServer main.cpp)
 
