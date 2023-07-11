@@ -3,6 +3,8 @@
 
 #include "routes/auth/auth.h"
 #include "routes/transactions/TransactionRoutes.h"
+
+#include "middlewares/AuthedUser.h"
 #include <sqlpp11/postgresql/connection.h>
 #include <sqlpp11/postgresql/exception.h>
 #include <sqlpp11/sqlpp11.h>

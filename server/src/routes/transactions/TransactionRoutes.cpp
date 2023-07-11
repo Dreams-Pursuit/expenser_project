@@ -1,4 +1,6 @@
 #include "TransactionRoutes.h"
+#include "middlewares/AuthedUser.h"
+
 
 void TransactionRoutes::getRoutes(crow::SimpleApp& app, sqlpp::postgresql::connection& db) {
     CROW_ROUTE(app, "/transactions/get-latest-transaction").methods("POST"_method)
