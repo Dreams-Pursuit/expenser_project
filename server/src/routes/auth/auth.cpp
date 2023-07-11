@@ -63,5 +63,6 @@ void AuthRoutes::getRoutes(crow::SimpleApp& app, sqlpp::postgresql::connection& 
 
 
 bool AuthRoutes::verifyPassword(std::string password, std::string originalHash) {
+    
     return true;
 }

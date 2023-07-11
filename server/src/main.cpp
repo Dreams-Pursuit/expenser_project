@@ -2,6 +2,7 @@
 #include "crow.h"
 
 #include "routes/auth/auth.h"
+#include "routes/transactions/TransactionRoutes.h"
 #include <sqlpp11/postgresql/connection.h>
 #include <sqlpp11/postgresql/exception.h>
 #include <sqlpp11/sqlpp11.h>
@@ -26,7 +27,9 @@ int main() {
         return "Hello world 22";
     });
     AuthRoutes authr;
+    TransactionRoutes transr;
     authr.getRoutes(app,db);
+    transr.getRoutes(app, db);
     app.port(18080).multithreaded().run();
     return 0;
 }
