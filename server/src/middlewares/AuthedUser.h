@@ -15,4 +15,4 @@ struct AuthedUser : crow::ILocalMiddleware {
         CROW_LOG_INFO << "After request to:" + req.url;
     }
 
-}
+};

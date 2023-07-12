@@ -117,7 +117,7 @@ namespace Expenser
     {
       struct _alias_t
       {
-        static constexpr const char _literal[] =  "TRANSACTION_ID";
+        static constexpr const char _literal[] =  "transaction_id";
         using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
         template<typename T>
         struct _member_t
@@ -133,7 +133,7 @@ namespace Expenser
     {
       struct _alias_t
       {
-        static constexpr const char _literal[] =  "CATEGORY";
+        static constexpr const char _literal[] =  "category";
         using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
         template<typename T>
         struct _member_t
@@ -149,7 +149,7 @@ namespace Expenser
     {
       struct _alias_t
       {
-        static constexpr const char _literal[] =  "AMOUNT";
+        static constexpr const char _literal[] =  "amount";
         using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
         template<typename T>
         struct _member_t
@@ -165,7 +165,7 @@ namespace Expenser
     {
       struct _alias_t
       {
-        static constexpr const char _literal[] =  "CURRENCY";
+        static constexpr const char _literal[] =  "currency";
         using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
         template<typename T>
         struct _member_t
@@ -181,7 +181,7 @@ namespace Expenser
     {
       struct _alias_t
       {
-        static constexpr const char _literal[] =  "DATE";
+        static constexpr const char _literal[] =  "date";
         using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
         template<typename T>
         struct _member_t
@@ -197,7 +197,7 @@ namespace Expenser
     {
       struct _alias_t
       {
-        static constexpr const char _literal[] =  "DESCRIPTION";
+        static constexpr const char _literal[] =  "description";
         using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
         template<typename T>
         struct _member_t
