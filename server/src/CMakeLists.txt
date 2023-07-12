@@ -12,7 +12,9 @@ set(INCLUDE_PATHS /usr/local/Cellar/boost/
 add_executable(ExpenserServer main.cpp)
 
 target_include_directories(ExpenserServer PUBLIC ${INCLUDE_PATHS})
+add_subdirectory(utilities)
 add_subdirectory(routes)
+
 
 
 target_link_libraries(ExpenserServer 
@@ -24,5 +26,6 @@ target_link_libraries(ExpenserServer
 target_sources(ExpenserServer 
     PRIVATE 
         main.cpp 
+        # utilities/hash/hash.cpp # 
 )
 

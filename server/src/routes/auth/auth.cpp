@@ -1,6 +1,10 @@
 #pragma once
 #include <iostream>
+#include <cryptopp/blowfish.h>
+#include "../../utilities/hash.h"
 #include "auth.h"
+
+
 #include "../../modeles/Expenser.h"
 
 void AuthRoutes::getRoutes(crow::SimpleApp& app, sqlpp::postgresql::connection& db) {
@@ -63,6 +67,6 @@ void AuthRoutes::getRoutes(crow::SimpleApp& app, sqlpp::postgresql::connection& 
 
 
 bool AuthRoutes::verifyPassword(std::string password, std::string originalHash) {
-    
+    std::string hashed = Hash::hashYourData(password);
     return true;
 }
