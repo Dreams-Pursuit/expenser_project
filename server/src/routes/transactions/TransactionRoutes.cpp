@@ -18,12 +18,19 @@ void TransactionRoutes::getRoutes(crow::SimpleApp& app, sqlpp::postgresql::conne
             TransactionsList trans;
             std::string user_id(x["user_id"]);
             int id = stoi(user_id);
-            auto response = db(select(all_of(trans)).from(trans).where(trans.USERID == id));
-            if(!response.empty()){
-                const auto& row = response.front();
-                std::cout << row.CATEGORY << " " << row.AMOUNT << " " << row.CURRENCY << " " << row.DATE << " " <<row.DESCRIPTION <<  std::endl;
-                return crow::response(200, "OK. Valid");
+            std::vector<crow::json::wvalue> response;
+            for(const auto& row : db(select(all_of(trans)).from(trans).where(trans.USERID == id))){
+                crow::json::wvalue y;
+                y["category"] = row.CATEGORY;
+                y["amount"] = row.AMOUNT;
+                y["currency"] = row.CURRENCY;
+                y["date"] = row.DATE;
+                y["description"] = row.DESCRIPTION;
+                //std::cout << row.CATEGORY << " " << row.AMOUNT << " " << row.CURRENCY << " " << row.DATE << " " <<row.DESCRIPTION <<  std::endl;
+                response.push_back(y);
             }
+            crow::json::wvalue final = std::move(response);
+            return crow::response(std::move(final));
         }
         return crow::response(200, "Your list of transactions is currently empty");
     });

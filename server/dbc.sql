@@ -13,7 +13,7 @@ CREATE TABLE transactions_list
     "CATEGORY" character varying(50) COLLATE pg_catalog."default" NOT NULL,
     "AMOUNT" numeric(8,2) NOT NULL,
     "CURRENCY" character(3) COLLATE pg_catalog."default" NOT NULL,
-    "DATE" timestamp without time zone NOT NULL,
+    "DATE" character varying(30) NOT NULL,
     "DESCRIPTION" character varying(150) COLLATE pg_catalog."default",
     CONSTRAINT transactions_list_pkey PRIMARY KEY ("TRANSACTION_ID"),
     CONSTRAINT user_id FOREIGN KEY ("USER_ID")

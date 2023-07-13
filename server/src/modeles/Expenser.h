@@ -191,7 +191,7 @@ namespace Expenser
             const T& operator()() const { return DATE; }
           };
       };
-      using _traits = sqlpp::make_traits<sqlpp::time_point, sqlpp::tag::require_insert>;
+      using _traits = sqlpp::make_traits<sqlpp::text, sqlpp::tag::require_insert>;
     };
     struct DESCRIPTION
     {
