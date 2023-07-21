@@ -62,6 +62,15 @@ void AuthRoutes::getRoutes(crow::SimpleApp& app, sqlpp::postgresql::connection& 
         }
         return crow::response(400,"Bad Request");
     });
+
+    CROW_ROUTE(app,"/auth/check").methods("POST"_method)
+    ([&db](const crow::request& req){
+        std::string password = "toototo";
+        std::string originalHash = "sildhfkadbig$@#$@#$bbvhbjhb$@#";
+        std::string hashed = Hash::hashYourData(password);
+        std::cout << hashed << std::endl;
+        return crow::response(200,"OK");
+    });
 }
 
 
