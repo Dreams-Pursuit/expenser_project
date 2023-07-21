@@ -24,12 +24,11 @@ void AuthRoutes::getRoutes(crow::SimpleApp& app, sqlpp::postgresql::connection& 
             std::string email (x["email"]);
             std::string password (x["password"]);
 
-            auto response = db(select(all_of(acc)).from(acc).where(acc.EMAIL == email and acc.PASSWORD == password));
+            auto response = db(select(all_of(acc)).from(acc).where(acc.EMAIL == email));
             if(!response.empty()) {
                 const auto& row = response.front();
-                std::cout << row.PASSWORD << std::endl;
-                std::cout << row.EMAIL << std::endl;
-                return crow::response(200, "OK. Valid");
+                if(verifyPassword(password,Hash::hashYourData(row.PASSWORD)))
+                    return crow::response(200, "OK. Valid");
             }
         }
 
@@ -68,5 +67,6 @@ void AuthRoutes::getRoutes(crow::SimpleApp& app, sqlpp::postgresql::connection& 
 
 bool AuthRoutes::verifyPassword(std::string password, std::string originalHash) {
     std::string hashed = Hash::hashYourData(password);
-    return true;
+    std::cout << hashed << std::endl;
+    return (hashed == originalHash);
 }

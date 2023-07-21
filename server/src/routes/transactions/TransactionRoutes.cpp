@@ -16,10 +16,31 @@ void TransactionRoutes::getRoutes(crow::SimpleApp& app, sqlpp::postgresql::conne
         if(x.has("user_id")){
             using namespace Expenser;
             TransactionsList trans;
+            std::ostringstream os;
+            std::string fromDate = "";
+            time_t now = time(0);
+            std::time_t t = std::time(nullptr);
+            std::tm tm = *std::localtime(&t);
+            os << std::put_time(&tm,"%Y-%m-%d %H:%M:%S");
+            std::string toDate = os.str();
+            if(req.url_params.get("from") != nullptr){
+                fromDate = boost::lexical_cast<std::string>(req.url_params.get("from"));
+                fromDate.insert(4,1,'-');
+                fromDate.insert(7,1,'-');
+                fromDate += " 23:59:59";
+                //std::cout << fromDate << std::endl;
+            }
+            if(req.url_params.get("to") != nullptr){
+                toDate = boost::lexical_cast<std::string>(req.url_params.get("to"));
+                toDate.insert(4,1,'-');
+                toDate.insert(7,1,'-');
+                toDate += " 23:59:59";
+                //std::cout << toDate << std::endl;
+            }
             std::string user_id(x["user_id"]);
             int id = stoi(user_id);
             std::vector<crow::json::wvalue> response;
-            for(const auto& row : db(select(all_of(trans)).from(trans).where(trans.USERID == id))){
+            for(const auto& row : db(select(all_of(trans)).from(trans).where(trans.USERID == id && trans.DATE >= fromDate && trans.DATE <= toDate))){
                 crow::json::wvalue y;
                 y["transaction_id"] = row.TRANSACTIONID;
                 y["category"] = row.CATEGORY;

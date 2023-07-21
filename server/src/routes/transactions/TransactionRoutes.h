@@ -6,6 +6,7 @@
 #include <sqlpp11/postgresql/connection.h>
 #include <sqlpp11/postgresql/exception.h>
 #include <sqlpp11/sqlpp11.h>
+#include <sstream>
 #include <string>
 #include <iomanip>
 #include <ctime>
