@@ -5,8 +5,8 @@
 
 void TransactionRoutes::getRoutes(crow::SimpleApp& app, sqlpp::postgresql::connection& db) {
     CROW_ROUTE(app, "/user/transactions").methods("POST"_method) //Get transaction list
-    ([&db](const crow::request& req) {
-        crow::json::rvalue x;
+    ([&db,this](const crow::request& req) {
+        crow::json::rvalue x; //rvalue - read value
         try{
                 x = crow::json::load(req.body);
         }
@@ -16,43 +16,26 @@ void TransactionRoutes::getRoutes(crow::SimpleApp& app, sqlpp::postgresql::conne
         if(x.has("user_id")){
             using namespace Expenser;
             TransactionsList trans;
-            std::ostringstream os;
-            std::string fromDate = "";
-            time_t now = time(0);
-            std::time_t t = std::time(nullptr);
-            std::tm tm = *std::localtime(&t);
-            os << std::put_time(&tm,"%Y-%m-%d %H:%M:%S");
-            std::string toDate = os.str();
-            if(req.url_params.get("from") != nullptr){
-                fromDate = boost::lexical_cast<std::string>(req.url_params.get("from"));
-                fromDate.insert(4,1,'-');
-                fromDate.insert(7,1,'-');
-                fromDate += " 23:59:59";
-                //std::cout << fromDate << std::endl;
-            }
-            if(req.url_params.get("to") != nullptr){
-                toDate = boost::lexical_cast<std::string>(req.url_params.get("to"));
-                toDate.insert(4,1,'-');
-                toDate.insert(7,1,'-');
-                toDate += " 23:59:59";
-                //std::cout << toDate << std::endl;
-            }
             std::string user_id(x["user_id"]);
             int id = stoi(user_id);
             std::vector<crow::json::wvalue> response;
-            for(const auto& row : db(select(all_of(trans)).from(trans).where(trans.USERID == id && trans.DATE >= fromDate && trans.DATE <= toDate))){
-                crow::json::wvalue y;
-                y["transaction_id"] = row.TRANSACTIONID;
+            auto query = getQuery(req);
+            for(const auto& row : db(select(all_of(trans)).from(trans).where(trans.USERID == id && //basic user_id check - we only send transactions of determined user
+            trans.DATE >= query[0] && trans.DATE <= query[1] &&  // taking some period from date1(fromDate) to date2(toDate)
+            trans.AMOUNT >= stod(query[2]) && trans.AMOUNT <= stod(query[3]) && // taking some amount from amount1(fromAmount) to amount2(toAmount) - still there are things to be done we should take absolute value of amount
+            (trans.CATEGORY == query[4] || !exists(select(trans.CATEGORY).from(trans).where(trans.CATEGORY == query[4])))))){ // To pass this test, transaction has to either fulfill the category(category list) request
+                crow::json::wvalue y;                                                                                          // or view which consists of transactions(of given category) has to be empty, which means that cat(string query for CATEGORY)
+                y["transaction_id"] = row.TRANSACTIONID;                                                                       // is empty or invalid(is dealt with by sending correct request from Front-end part)
                 y["category"] = row.CATEGORY;
                 y["amount"] = row.AMOUNT;
                 y["currency"] = row.CURRENCY;
                 y["date"] = row.DATE;
                 y["description"] = row.DESCRIPTION;
                 //std::cout << row.CATEGORY << " " << row.AMOUNT << " " << row.CURRENCY << " " << row.DATE << " " <<row.DESCRIPTION <<  std::endl;
-                response.push_back(y);
+                response.push_back(y); //After transforming each transaction into json object, we put it in vector;
             }
-            crow::json::wvalue final = std::move(response);
-            return crow::response(std::move(final));
+            crow::json::wvalue final = std::move(response); // here we should perform std::move operation twice to turn vector into array
+            return crow::response(std::move(final));        // because response doesn't work with vector(it doesn't treat it as &&response)
         }
         return crow::response(200, "Your list of transactions is currently empty");
     });// Get transaction list
@@ -143,4 +126,45 @@ void TransactionRoutes::getRoutes(crow::SimpleApp& app, sqlpp::postgresql::conne
         }
         return crow::response(401, "Failed to delete a transaction");
     });//Delete transaction
+}
+std::vector<std::string> TransactionRoutes::getQuery(const crow::request& req){ //Configuring the query so only chosen transactions are viewed
+    std::vector<std::string>config;
+    std::ostringstream os;
+    std::string fromDate = "";
+    time_t now = time(0);
+    std::time_t t = std::time(nullptr);
+    std::tm tm = *std::localtime(&t);
+    os << std::put_time(&tm,"%Y-%m-%d %H:%M:%S");
+    std::string toDate = os.str();
+    std::string fromAmount = "-1000000";
+    std::string toAmount = "1000000";
+    std::string cat = "";
+        if(req.url_params.get("dfrom") != nullptr){ // dfrom - date from
+            fromDate = boost::lexical_cast<std::string>(req.url_params.get("dfrom"));
+            fromDate.insert(4,1,'-');   // lines 144-146 are made to serialize the date and turn it into 'timestamp'
+            fromDate.insert(7,1,'-');
+            fromDate += " 00:00:00";
+        }
+        config.push_back(fromDate);
+        if(req.url_params.get("dto") != nullptr){ // dto - date to
+            toDate = boost::lexical_cast<std::string>(req.url_params.get("dto"));
+            toDate.insert(4,1,'-');
+            toDate.insert(7,1,'-');
+            toDate += " 23:59:59";
+            //std::cout << toDate << std::endl;
+        }
+        config.push_back(toDate);
+        if(req.url_params.get("afrom") != nullptr){ // afrom - amount from
+            fromAmount = boost::lexical_cast<std::string>(req.url_params.get("afrom"));
+        }
+        config.push_back(fromAmount);
+        if(req.url_params.get("ato") != nullptr){ // ato - amount to
+            toAmount = boost::lexical_cast<std::string>(req.url_params.get("ato"));
+        }
+        config.push_back(toAmount);
+        if(req.url_params.get("cat") != nullptr){ // cat - category
+            cat = boost::lexical_cast<std::string>(req.url_params.get("cat"));
+        }
+        config.push_back(cat);
+        return config;
 }
