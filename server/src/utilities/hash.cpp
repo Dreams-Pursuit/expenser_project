@@ -11,7 +11,7 @@ std::string Hash::hashYourData(std::string plaintext){
 	
 	CryptoPP::byte* passwd = (unsigned char*)plaintext.c_str();
 	
-    CryptoPP::byte salt[] = "I am Salty AF and this keeps my passwords relatively secure";
+    CryptoPP::byte salt[] = "Sasha Belogorostev has the greatest pass ever!";
 	size_t slen = strlen((const char*)salt);
 	
 	CryptoPP::byte info[] = "HKDF key derivation";

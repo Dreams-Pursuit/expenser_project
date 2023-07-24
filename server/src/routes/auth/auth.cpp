@@ -1,7 +1,11 @@
 #pragma once
 #include <iostream>
+#include <chrono>
+#include <ctime>
+
 // #include <cryptopp/blowfish.h>
 #include "../../utilities/hash.h"
+#include "../../utilities/token.h"
 #include "auth.h"
 
 
@@ -18,19 +22,50 @@ void AuthRoutes::getRoutes(crow::SimpleApp& app, sqlpp::postgresql::connection& 
             return crow::response(400, "probably json syntax error");
         }
         std::cout << x << std::endl;
-        if (x.has("password") || x.has("email"))  {
-            using namespace Expenser;
-            AccountData acc;
-            std::string email (x["email"]);
-            std::string password (x["password"]);
 
-            auto response = db(select(all_of(acc)).from(acc).where(acc.EMAIL == email));
-            if(!response.empty()) {
-                const auto& row = response.front();
-                if(verifyPassword(password,Hash::hashYourData(row.PASSWORD)))
-                    return crow::response(200, "OK. Valid");
+        if (!x.has("grant_type")) return crow::response(400, "Invalid request");
+        std::string grant_type (x["grant_type"]);
+        
+        if (grant_type == "password") {
+            if (x.has("password") && x.has("email"))  {
+                using namespace Expenser;
+                AccountData acc;
+                std::string email (x["email"]);
+                std::string password (x["password"]);
+
+                auto response = db(select(all_of(acc)).from(acc).where(acc.EMAIL == email));
+                if(!response.empty()) {
+                    const auto& row = response.front();
+                    if(verifyPassword(password,Hash::hashYourData(row.PASSWORD))) {
+                        const std::time_t issuedAt = std::time(nullptr);
+                        const std::time_t expiredAt = std::time(nullptr) + JWT::Token::TOKEN_LIVE_TIME;
+                        std::cout << "Issued at: " << issuedAt << " and expired at: " << expiredAt << std::endl;
+
+                        JWT::Payload jwtPayload = JWT::Payload(row.EMAIL, issuedAt, expiredAt);
+                        JWT::Token token = JWT::Token(jwtPayload);
+
+
+                        std::string access_token = token.generateJWTToken();
+                        std::string refresh_token = "refresh_token";
+
+                        crow::json::wvalue resBody;
+                        resBody["access_token"] = access_token;
+                        resBody["refresh_token"] = refresh_token;
+                        resBody["valid_for"] = JWT::Token::TOKEN_LIVE_TIME;
+                        resBody["token_type"] = "bearer";
+                        return crow::response(resBody);
+                        // return crow::response(200, "OK. Valid");
+                    }
+                }
             }
-        }
+            return crow::response(400, "Invalid request. The field password or email is absent");
+        } else if (grant_type == "access_token" && x.has("access_token")) {
+
+            // if (JWT::verify)
+            
+            return crow::response(403, "Invalid token");
+        } ;
+        
 
         return crow::response(403, "Invalid credentials");
     });
@@ -63,12 +98,38 @@ void AuthRoutes::getRoutes(crow::SimpleApp& app, sqlpp::postgresql::connection& 
         return crow::response(400,"Bad Request");
     });
 
-    CROW_ROUTE(app,"/auth/check").methods("POST"_method)
+
+    CROW_ROUTE(app,"/auth/verify-session").methods("POST"_method) //TMP
+    ([&db](const crow::request& req){
+        crow::json::rvalue x;
+        try {
+                x = crow::json::load(req.body);
+        }
+        catch(...){
+            return crow::response(400, "probably json syntax error");
+        }
+        if (!x.has("access_token")) return crow::response(400, "Invalid request");
+
+        return crow::response(200,"OK");
+    });
+
+    CROW_ROUTE(app,"/auth/check").methods("GET"_method) //TMP
     ([&db](const crow::request& req){
         std::string password = "toototo";
         std::string originalHash = "sildhfkadbig$@#$@#$bbvhbjhb$@#";
         std::string hashed = Hash::hashYourData(password);
         std::cout << hashed << std::endl;
+        return crow::response(200,"OK");
+    });
+
+    CROW_ROUTE(app,"/auth/check-hash").methods("GET"_method) //TMP
+    ([&db](const crow::request& req){
+        JWT::JWTHeader jwtHead = JWT::JWTHeader("HMAC", "JWT");
+        JWT::Payload jwtPayload = JWT::Payload("sashka", 1516239022, 1516239022);
+        JWT::Token token = JWT::Token(jwtPayload, jwtHead);
+        std::string jwt = token.generateJWTToken();
+        std::cout << jwt << std::endl;
+        JWT::verifyToken(jwt);
         return crow::response(200,"OK");
     });
 }
