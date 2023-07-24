@@ -24,7 +24,8 @@ Our tech stack is incredible:
 - [PostgreSQL] - verified by time.
 - [sqlpp11]
 - [Boost]
-- [cmake] 
+- [cmake]
+- [cryptopp] 
 
 And of course Expenser itself is open source with a [public repository][dill]
  on GitHub.
