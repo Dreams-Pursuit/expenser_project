@@ -82,7 +82,7 @@ void TransactionRoutes::getRoutes(crow::SimpleApp& app, sqlpp::postgresql::conne
             int id = stoi(trans_id);
             std::string category(x["category"]);
             std::string amount(x["amount"]);
-            int int_amount = stoi(amount);
+            double d_amount = stod(amount);
             std::string currency(x["currency"]);
             std::string date(x["date"]);
             std::string description(x["description"]);
@@ -90,7 +90,7 @@ void TransactionRoutes::getRoutes(crow::SimpleApp& app, sqlpp::postgresql::conne
                 if(!category.empty())
                     db(update(trans).set(trans.CATEGORY = category).where(trans.TRANSACTIONID == id));
                 if(!amount.empty())
-                    db(update(trans).set(trans.AMOUNT = int_amount).where(trans.TRANSACTIONID == id));
+                    db(update(trans).set(trans.BALANCEAFTER = trans.BALANCEAFTER - trans.AMOUNT + d_amount && trans.AMOUNT = d_amount).where(trans.TRANSACTIONID == id));
                 if(!currency.empty())
                     db(update(trans).set(trans.CURRENCY = currency).where(trans.TRANSACTIONID == id));
                 if(!date.empty())
@@ -141,7 +141,7 @@ std::vector<std::string> TransactionRoutes::getQuery(const crow::request& req){ 
     std::string cat = "";
         if(req.url_params.get("dfrom") != nullptr){ // dfrom - date from
             fromDate = boost::lexical_cast<std::string>(req.url_params.get("dfrom"));
-            fromDate.insert(4,1,'-');   // lines 144-146 are made to serialize the date and turn it into 'timestamp'
+            fromDate.insert(4,1,'-');   // lines 144-146s are made to serialize the date and turn it into 'timestamp'
             fromDate.insert(7,1,'-');
             fromDate += " 00:00:00";
         }

@@ -15,6 +15,7 @@ CREATE TABLE transactions_list
     "CURRENCY" character(3) COLLATE pg_catalog."default" NOT NULL,
     "DATE" character varying(30) NOT NULL,
     "DESCRIPTION" character varying(150) COLLATE pg_catalog."default",
+    "BALANCE_AFTER" numeric(10,2),
     CONSTRAINT transactions_list_pkey PRIMARY KEY ("TRANSACTION_ID"),
     CONSTRAINT user_id FOREIGN KEY ("USER_ID")
         REFERENCES public.account_data ("USER_ID") MATCH SIMPLE
