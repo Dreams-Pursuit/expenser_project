@@ -12,6 +12,6 @@ struct DB_CREDENTIALS {
 struct CREDENTIAL_SALT {
     static const std::string ACCESS_TOKEN_SALT;
     static const std::string REFRESH_TOKEN_SALT;
-    static const std::string PASSWORD_SALT;
+    static const std::string PASSWORD_TOKEN_SALT;
 };
 #endif

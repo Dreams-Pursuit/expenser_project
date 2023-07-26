@@ -107,7 +107,7 @@ void AuthRoutes::getRoutes(crow::SimpleApp& app, sqlpp::postgresql::connection& 
             if (!ifExists.empty()) {
                 return crow::response(400,"The user with this email already exists");
             }
-            password = Hash::hashYourData(password, CREDENTIAL_SALT::PASSWORD_SALT);
+            password = Hash::hashYourData(password, CREDENTIAL_SALT::PASSWORD_TOKEN_SALT);
 
             db(insert_into(acc).set(acc.EMAIL = email, acc.PASSWORD = password, acc.mainCurrency = mainCurrency));
             return crow::response(201,"The user was created");
@@ -153,7 +153,7 @@ void AuthRoutes::getRoutes(crow::SimpleApp& app, sqlpp::postgresql::connection& 
 
 
 bool AuthRoutes::verifyPassword(std::string password, std::string originalHash) {
-    std::string hashed = Hash::hashYourData(password, CREDENTIAL_SALT::PASSWORD_SALT);
+    std::string hashed = Hash::hashYourData(password, CREDENTIAL_SALT::PASSWORD_TOKEN_SALT);
     std::cout << hashed << std::endl;
     return (hashed == originalHash);
 }
