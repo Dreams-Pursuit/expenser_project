@@ -56,11 +56,12 @@ void TransactionRoutes::getRoutes(crow::SimpleApp& app, sqlpp::postgresql::conne
             int id = stoi(user_id);
             std::string category(x["category"]);
             std::string amount(x["amount"]);
-            int int_amount = stoi(amount);
+            double d_amount = stod(amount);
             std::string currency(x["currency"]);
             std::string date(x["date"]);
             std::string description(x["description"]);
-            db(insert_into(trans).set(trans.USERID = id, trans.CATEGORY = category, trans.AMOUNT = int_amount, trans.CURRENCY = currency, trans.DATE = date, trans.DESCRIPTION = description));
+            auto balance = select(trans.BALANCEAFTER).from(trans).where(trans.TRANSACTIONID == select(max(trans.TRANSACTIONID)).from(trans).where(trans.USERID == id));
+            db(insert_into(trans).set(trans.USERID = id, trans.CATEGORY = category, trans.AMOUNT = d_amount, trans.CURRENCY = currency, trans.DATE = date, trans.DESCRIPTION = description, trans.BALANCEAFTER = balance + d_amount));
             return crow::response(200,"Transaction has been successfully added to your list");
         }
         return crow::response(401, "Failed to add a new transaction");
@@ -89,15 +90,17 @@ void TransactionRoutes::getRoutes(crow::SimpleApp& app, sqlpp::postgresql::conne
             if(!db(select(all_of(trans)).from(trans).where(trans.TRANSACTIONID == id)).empty()){
                 if(!category.empty())
                     db(update(trans).set(trans.CATEGORY = category).where(trans.TRANSACTIONID == id));
-                if(!amount.empty())
-                    db(update(trans).set(trans.BALANCEAFTER = trans.BALANCEAFTER - trans.AMOUNT + d_amount && trans.AMOUNT = d_amount).where(trans.TRANSACTIONID == id));
+                if(!amount.empty()){
+                    db(update(trans).set(trans.BALANCEAFTER = select(trans.BALANCEAFTER).from(trans).where(trans.TRANSACTIONID == id) + d_amount - select(trans.AMOUNT).from(trans).where(trans.TRANSACTIONID == id),
+                    trans.AMOUNT = d_amount).where(trans.TRANSACTIONID == id));
+                }
                 if(!currency.empty())
                     db(update(trans).set(trans.CURRENCY = currency).where(trans.TRANSACTIONID == id));
                 if(!date.empty())
                     db(update(trans).set(trans.DATE = date).where(trans.TRANSACTIONID == id));
                 if(!description.empty())
                     db(update(trans).set(trans.DESCRIPTION = description).where(trans.TRANSACTIONID == id));
-                return crow::response(200,"Transaction has been successfully modifiedс");
+                return crow::response(200,"Transaction has been successfully modified");
             }
             return crow::response(404,"Oops, can't find this transaction!");
         }
