@@ -15,6 +15,14 @@ std::string getBase64(std::string convertTo) {
     return encoded;
 }
 
+std::string decodeBase64(std::string convertFrom) {
+    std::string encoded;
+    // CryptoPP::StringSource ss(convertTo, true, 
+    // new CryptoPP::Base64Encoder(new CryptoPP::StringSink(encoded)));
+
+    return encoded;
+}
+
 
 std::string JWT::JWTHeader::getBase64Encoded() {
     return getBase64(alg + typ);
@@ -25,15 +33,15 @@ std::string JWT::Payload::getBase64Encoded() {
 }
 
 
-std::string JWT::Token::generateJWTToken() {
+std::string JWT::Token::generateJWTToken(std::string selected_salt) {
     std::string headerBase64 = header.getBase64Encoded();
     std::string payloadBase64 = payload.getBase64Encoded();
 
-    std::string hashed = Hash::hashYourData(header.getBase64Encoded() + "." + payload.getBase64Encoded());
+    std::string hashed = Hash::hashYourData(header.getBase64Encoded() + "." + payload.getBase64Encoded(), selected_salt);
     return headerBase64 + "." + payloadBase64 + "." + hashed;
 }
 
-bool JWT::verifyToken(std::string jwt) {
+bool JWT::verifyToken(std::string jwt, std::string selected_salt) {
     int end = jwt.find(".");
     std::vector<std::string> jwtSeparated;
     while (end != -1) {
@@ -43,18 +51,9 @@ bool JWT::verifyToken(std::string jwt) {
     }
     jwtSeparated.push_back(jwt.substr(0, end));
     if (jwtSeparated.size() < 3) return false;
-
-    std::string hashed = Hash::hashYourData(jwtSeparated[0] + "." + jwtSeparated[1]);
+    if (selected_salt == CREDENTIAL_SALT::ACCESS_TOKEN_SALT) {
+    }
+    std::string hashed = Hash::hashYourData(jwtSeparated[0] + "." + jwtSeparated[1], selected_salt);
     std::cout << "Are tokens equal: " << (hashed == jwtSeparated[2]) << std::endl;
     return hashed == jwtSeparated[2];
 }
-
-// JWT::JWTTokens JWT::issueNewTokens(JWT::Payload payload) {
-//     const std::time_t issuedAt = std::time(nullptr);
-//     const std::time_t expiredAt = std::time(nullptr) + JWT::Token::TOKEN_LIVE_TIME;
-//     std::cout << "Issued at: " << issuedAt << " and expired at: " << expiredAt << std::endl;
-
-//     JWT::Payload jwtPayload = JWT::Payload(row.EMAIL, issuedAt, expiredAt);
-//     JWT::Token token = JWT::Token(jwtPayload);
-//     return JWTTokens();
-// };

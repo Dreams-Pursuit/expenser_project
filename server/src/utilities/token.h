@@ -1,6 +1,7 @@
 
 #include <string>
 #include <cryptopp/base64.h>
+#include "../../config/Sensitive.h"
 
 namespace JWT {
     using std::string;
@@ -32,16 +33,8 @@ namespace JWT {
             static int TOKEN_LIVE_TIME;
             
             Token(Payload payload, JWTHeader header=JWTHeader("HMAC", "JWT")): header(header), payload(payload) {};
-            string generateJWTToken();
+            string generateJWTToken(std::string selected_salt=CREDENTIAL_SALT::ACCESS_TOKEN_SALT);
     };
 
-    // struct JWTTokens {
-    //     string access_token;
-    //     string refresh_token;
-
-    //     JWTTokens(string access_token, string refresh_token): access_token(access_token), refresh_token(refresh_token) {};
-    // };
-
-    // JWTTokens issueNewTokens(Payload payload);
-    bool verifyToken(string jwt);
+    bool verifyToken(string jwt, string salt_selected=CREDENTIAL_SALT::ACCESS_TOKEN_SALT);
 }

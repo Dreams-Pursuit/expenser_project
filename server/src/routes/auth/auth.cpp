@@ -3,7 +3,7 @@
 #include <chrono>
 #include <ctime>
 
-// #include <cryptopp/blowfish.h>
+#include "../config/Sensitive.h"
 #include "../../utilities/hash.h"
 #include "../../utilities/token.h"
 #include "auth.h"
@@ -33,20 +33,26 @@ void AuthRoutes::getRoutes(crow::SimpleApp& app, sqlpp::postgresql::connection& 
                 std::string email (x["email"]);
                 std::string password (x["password"]);
 
+                std::cout << "I'm here, catch me if you can" << std::endl;
+
                 auto response = db(select(all_of(acc)).from(acc).where(acc.EMAIL == email));
                 if(!response.empty()) {
                     const auto& row = response.front();
-                    if(verifyPassword(password,Hash::hashYourData(row.PASSWORD))) {
+                    if(verifyPassword(password,row.PASSWORD)) {
                         const std::time_t issuedAt = std::time(nullptr);
-                        const std::time_t expiredAt = std::time(nullptr) + JWT::Token::TOKEN_LIVE_TIME;
-                        std::cout << "Issued at: " << issuedAt << " and expired at: " << expiredAt << std::endl;
+                        const std::time_t expiredAtAccess = std::time(nullptr) + 600;
+                        const std::time_t expiredAtRefresh = std::time(nullptr) + 86400;
+                        std::cout << "Access token was issued at: " << issuedAt << " and expired at: " << expiredAtAccess << std::endl;
+                        std::cout << "Refresh token was issued at: " << issuedAt << " and expired at: " << expiredAtRefresh << std::endl;
 
-                        JWT::Payload jwtPayload = JWT::Payload(row.EMAIL, issuedAt, expiredAt);
+                        JWT::Payload jwtPayload = JWT::Payload(row.EMAIL, issuedAt, expiredAtAccess);
+                        JWT::Payload jwtPayloadRefresh = JWT::Payload(row.EMAIL, issuedAt, expiredAtRefresh);
                         JWT::Token token = JWT::Token(jwtPayload);
+                        JWT::Token tokenRefresh = JWT::Token(jwtPayloadRefresh);
 
 
                         std::string access_token = token.generateJWTToken();
-                        std::string refresh_token = "refresh_token";
+                        std::string refresh_token = tokenRefresh.generateJWTToken(CREDENTIAL_SALT::REFRESH_TOKEN_SALT);
 
                         crow::json::wvalue resBody;
                         resBody["access_token"] = access_token;
@@ -54,20 +60,30 @@ void AuthRoutes::getRoutes(crow::SimpleApp& app, sqlpp::postgresql::connection& 
                         resBody["valid_for"] = JWT::Token::TOKEN_LIVE_TIME;
                         resBody["token_type"] = "bearer";
                         return crow::response(resBody);
-                        // return crow::response(200, "OK. Valid");
+                    } else {
+                        return crow::response(403, "Invalid request. Invalid password");    
                     }
+                } else {
+                    return crow::response(403, "Invalid request. This user does not exist");        
                 }
             }
             return crow::response(400, "Invalid request. The field password or email is absent");
         } else if (grant_type == "access_token" && x.has("access_token")) {
+            std::string access_token (x["access_token"]);
+            if (JWT::verifyToken(access_token)) {
+                return crow::response(200, "OK. Valid token"); 
+            } 
 
-            // if (JWT::verify)
-            
-            return crow::response(403, "Invalid token");
+            return crow::response(406, "Invalid token");
         } ;
         
 
         return crow::response(403, "Invalid credentials");
+    });
+
+    CROW_ROUTE(app, "/auth/refresh").methods("POST"_method)
+    ([&db](const crow::request& req){
+        return crow::response(200, "OK"); 
     });
 
     CROW_ROUTE(app,"/auth/register").methods("POST"_method)
@@ -91,6 +107,7 @@ void AuthRoutes::getRoutes(crow::SimpleApp& app, sqlpp::postgresql::connection& 
             if (!ifExists.empty()) {
                 return crow::response(400,"The user with this email already exists");
             }
+            password = Hash::hashYourData(password, CREDENTIAL_SALT::PASSWORD_SALT);
 
             db(insert_into(acc).set(acc.EMAIL = email, acc.PASSWORD = password, acc.mainCurrency = mainCurrency));
             return crow::response(201,"The user was created");
@@ -136,7 +153,7 @@ void AuthRoutes::getRoutes(crow::SimpleApp& app, sqlpp::postgresql::connection& 
 
 
 bool AuthRoutes::verifyPassword(std::string password, std::string originalHash) {
-    std::string hashed = Hash::hashYourData(password);
+    std::string hashed = Hash::hashYourData(password, CREDENTIAL_SALT::PASSWORD_SALT);
     std::cout << hashed << std::endl;
     return (hashed == originalHash);
 }

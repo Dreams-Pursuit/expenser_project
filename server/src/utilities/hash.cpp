@@ -6,12 +6,14 @@
 #include <cryptopp/filters.h>
 #include <cryptopp/sha.h>
 
-std::string Hash::hashYourData(std::string plaintext){
+
+
+std::string Hash::hashYourData(std::string plaintext, std::string salt_selected){
 	size_t plen = plaintext.length();
 	
 	CryptoPP::byte* passwd = (unsigned char*)plaintext.c_str();
 	
-    CryptoPP::byte salt[] = "Sasha Belogorostev has the greatest pass ever!";
+    CryptoPP::byte* salt = (unsigned char*)salt_selected.c_str();
 	size_t slen = strlen((const char*)salt);
 	
 	CryptoPP::byte info[] = "HKDF key derivation";

@@ -9,7 +9,7 @@
 #include <sqlpp11/postgresql/exception.h>
 #include <sqlpp11/sqlpp11.h>
 
-#include "../config/Sensitive.cpp"
+#include "../config/Sensitive.h"
 
 
 namespace sql = sqlpp::postgresql;
