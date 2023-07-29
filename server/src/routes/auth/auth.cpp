@@ -15,7 +15,8 @@ void AuthRoutes::getRoutes(crow::SimpleApp& app, sqlpp::postgresql::connection& 
     CROW_ROUTE(app,"/auth/login").methods("POST"_method)
     ([&db](const crow::request& req){
         crow::json::rvalue x;
-        try{
+        try{    
+                std::cout << req.body << std::endl;
                 x = crow::json::load(req.body);
         }
         catch(...){
@@ -70,11 +71,11 @@ void AuthRoutes::getRoutes(crow::SimpleApp& app, sqlpp::postgresql::connection& 
             return crow::response(400, "Invalid request. The field password or email is absent");
         } else if (grant_type == "access_token" && x.has("access_token")) {
             std::string access_token (x["access_token"]);
-            if (JWT::verifyToken(access_token)) {
+            if (JWT::verifyToken(access_token) == JWT::TOKEN_VERIFICATION_STATUS::VALID) {
                 return crow::response(200, "OK. Valid token"); 
-            } 
-
-            return crow::response(406, "Invalid token");
+            } else if (JWT::verifyToken(access_token) == JWT::TOKEN_VERIFICATION_STATUS::EXPIRED) {
+                return crow::response(406, "Token is expired"); 
+            }
         } ;
         
 
@@ -142,7 +143,7 @@ void AuthRoutes::getRoutes(crow::SimpleApp& app, sqlpp::postgresql::connection& 
     CROW_ROUTE(app,"/auth/check-hash").methods("GET"_method) //TMP
     ([&db](const crow::request& req){
         JWT::JWTHeader jwtHead = JWT::JWTHeader("HMAC", "JWT");
-        JWT::Payload jwtPayload = JWT::Payload("sashka", 1516239022, 1516239022);
+        JWT::Payload jwtPayload = JWT::Payload("sashka", 1690638306, 1690638999);
         JWT::Token token = JWT::Token(jwtPayload, jwtHead);
         std::string jwt = token.generateJWTToken();
         std::cout << jwt << std::endl;

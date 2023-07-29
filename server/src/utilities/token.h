@@ -36,5 +36,11 @@ namespace JWT {
             string generateJWTToken(std::string selected_salt=CREDENTIAL_SALT::ACCESS_TOKEN_SALT);
     };
 
-    bool verifyToken(string jwt, string salt_selected=CREDENTIAL_SALT::ACCESS_TOKEN_SALT);
+    enum TOKEN_VERIFICATION_STATUS {
+        INVALID,
+        VALID,
+        EXPIRED
+    };
+
+    TOKEN_VERIFICATION_STATUS verifyToken(string jwt, string salt_selected=CREDENTIAL_SALT::ACCESS_TOKEN_SALT);
 }
