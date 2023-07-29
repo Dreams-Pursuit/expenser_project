@@ -11,7 +11,7 @@
 
 #include "../../modeles/Expenser.h"
 
-void AuthRoutes::getRoutes(crow::SimpleApp& app, sqlpp::postgresql::connection& db) {
+void AuthRoutes::getRoutes(crow::App<crow::CORSHandler>& app, sqlpp::postgresql::connection& db) {
     CROW_ROUTE(app,"/auth/login").methods("POST"_method)
     ([&db](const crow::request& req){
         crow::json::rvalue x;

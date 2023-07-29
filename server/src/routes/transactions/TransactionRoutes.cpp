@@ -3,7 +3,7 @@
 //#include "middlewares/AuthedUser.h"
 #include "../../modeles/Expenser.h"
 
-void TransactionRoutes::getRoutes(crow::SimpleApp& app, sqlpp::postgresql::connection& db) {
+void TransactionRoutes::getRoutes(crow::App<crow::CORSHandler>& app, sqlpp::postgresql::connection& db) {
     CROW_ROUTE(app, "/user/transactions").methods("POST"_method) //Get transaction list
     ([&db,this](const crow::request& req) {
         crow::json::rvalue x; //rvalue - read value

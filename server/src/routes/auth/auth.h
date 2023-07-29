@@ -9,7 +9,7 @@
 #include <string>
 class AuthRoutes {
 public:
-    void getRoutes(crow::SimpleApp& app, sqlpp::postgresql::connection& db);
+    void getRoutes(crow::App<crow::CORSHandler>& app, sqlpp::postgresql::connection& db);
 private:
     static bool verifyPassword(std::string password, std::string originalHash);
 };

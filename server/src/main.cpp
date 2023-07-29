@@ -1,6 +1,6 @@
 #include <iostream>
-#include "crow.h"
 
+#include "crow.h"
 #include "routes/auth/auth.h"
 #include "routes/transactions/TransactionRoutes.h"
 
@@ -16,7 +16,7 @@ namespace sql = sqlpp::postgresql;
 
 int main() {
 
-    crow::SimpleApp app;
+    crow::App<crow::CORSHandler> app;
     auto config = std::make_shared<sql::connection_config>();
     config->host = DB_CREDENTIALS::HOST;
     config->user = DB_CREDENTIALS::USER;

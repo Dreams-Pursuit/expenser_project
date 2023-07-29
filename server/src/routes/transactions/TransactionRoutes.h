@@ -13,7 +13,7 @@
 
 class TransactionRoutes {
 public:
-    void getRoutes(crow::SimpleApp& app, sqlpp::postgresql::connection& db);
+    void getRoutes(crow::App<crow::CORSHandler>& app, sqlpp::postgresql::connection& db);
     std::vector<std::string> getQuery(const crow::request& req);
 };
 
