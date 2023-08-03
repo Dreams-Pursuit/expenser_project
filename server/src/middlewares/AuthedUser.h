@@ -3,6 +3,9 @@
 #include "crow.h"
 
 struct AuthedUser : crow::ILocalMiddleware {
+    AuthedUser() {
+        
+    }
     struct context {
 
     };

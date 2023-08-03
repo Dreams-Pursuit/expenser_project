@@ -3,6 +3,7 @@
 #include "crow.h"
 #include "routes/auth/auth.h"
 #include "routes/transactions/TransactionRoutes.h"
+#include "routes/form/Form.h"
 
 #include "middlewares/AuthedUser.h"
 #include <sqlpp11/postgresql/connection.h>
@@ -30,8 +31,11 @@ int main() {
     });
     AuthRoutes authr;
     TransactionRoutes transr;
+    Form formr;
     authr.getRoutes(app,db);
     transr.getRoutes(app, db);
+    formr.getRoutes(app, db);
+
     app.port(18080).multithreaded().run();
     return 0;
 }

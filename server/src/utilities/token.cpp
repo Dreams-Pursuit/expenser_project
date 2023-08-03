@@ -4,41 +4,16 @@
 #include <vector>
 #include <ctime>
 #include "crow.h"
+#include "./Base64EncDec.h"
 
 int JWT::Token::TOKEN_LIVE_TIME = 3600;
 
-
-std::string getBase64(std::string convertTo) {
-    std::string encoded;
-    CryptoPP::StringSource ss(convertTo, true, 
-    new CryptoPP::Base64Encoder(new CryptoPP::StringSink(encoded)));
-
-    return encoded;
-}
-
-std::string decodeBase64(std::string convertFrom) {
-    std::string encoded = convertFrom;
-    std::string decoded;
-    
-    CryptoPP::StringSource ss(encoded, true,
-        new CryptoPP::Base64Decoder(
-            new CryptoPP::StringSink(decoded)
-        ) // Base64Decoder
-    ); // StringSource
-
-    return decoded;
-}
-
-// crow::json::rvalue parseJSON(std::string json) {
-
-// }
-
 std::string JWT::JWTHeader::getBase64Encoded() {
-    return getBase64("{\"alg\":\"" + alg + "\",\"type:\"" + typ + "\"}");
+    return Base64EncDec::getBase64("{\"alg\":\"" + alg + "\",\"type:\"" + typ + "\"}");
 }
 
 std::string JWT::Payload::getBase64Encoded() {
-    return getBase64("{\"username\":\"" + username + "\",\"issuedAt\":"+ std::to_string(issuedAt) + ",\"expiredAt\":"+ std::to_string(expiredAt) + "}");
+    return Base64EncDec::getBase64("{\"username\":\"" + username + "\",\"issuedAt\":"+ std::to_string(issuedAt) + ",\"expiredAt\":"+ std::to_string(expiredAt) + "}");
 }
 
 
@@ -63,8 +38,8 @@ JWT::TOKEN_VERIFICATION_STATUS JWT::verifyToken(std::string jwt, std::string sel
 
     crow::json::rvalue x;
     try{
-        std::cout << decodeBase64(jwtSeparated[1]) << std::endl;
-        x = crow::json::load(decodeBase64(jwtSeparated[1]));
+        std::cout << Base64EncDec::decodeBase64(jwtSeparated[1]) << std::endl;
+        x = crow::json::load(Base64EncDec::decodeBase64(jwtSeparated[1]));
     }
     catch(...){
         std::cout << "Fuck off" << std::endl;

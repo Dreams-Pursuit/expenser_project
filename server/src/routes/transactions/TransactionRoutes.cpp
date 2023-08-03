@@ -1,6 +1,5 @@
 #pragma once
 #include "TransactionRoutes.h"
-//#include "middlewares/AuthedUser.h"
 #include "../../modeles/Expenser.h"
 
 void TransactionRoutes::getRoutes(crow::App<crow::CORSHandler>& app, sqlpp::postgresql::connection& db) {

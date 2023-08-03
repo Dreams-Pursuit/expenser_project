@@ -1,6 +1,5 @@
 
 #include <string>
-#include <cryptopp/base64.h>
 #include "../../config/Sensitive.h"
 
 namespace JWT {
