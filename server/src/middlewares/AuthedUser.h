@@ -20,10 +20,16 @@ struct AuthedUser : crow::ILocalMiddleware {
             res.code = 400;
             res.end();
         }
-        if (ctx.parsedX.has("access_token") && ctx.parsedX.has("user_id")) {
+        if (!(ctx.parsedX.has("access_token") && ctx.parsedX.has("user_id"))) {
+            res.code = 400;
+            res.end();
+        } else {
             std::string access_token(ctx.parsedX["access_token"]);
             std::string userId(ctx.parsedX["user_id"]);
-            if (JWT::verifyToken(access_token, CREDENTIAL_SALT::ACCESS_TOKEN_SALT, stoi(userId))) {
+            if (JWT::verifyToken(access_token, CREDENTIAL_SALT::ACCESS_TOKEN_SALT, stoi(userId)) == JWT::TOKEN_VERIFICATION_STATUS::VALID) {
+                CROW_LOG_INFO << "Token:" + access_token;
+                CROW_LOG_INFO << "UserId:" + userId;
+            } else if (req.url.find("/transactions/add") != std::string::npos && JWT::verifyToken(access_token, CREDENTIAL_SALT::ACCESS_TOKEN_SALT, stoi(userId), "form") == JWT::TOKEN_VERIFICATION_STATUS::VALID) {
                 CROW_LOG_INFO << "Token:" + access_token;
                 CROW_LOG_INFO << "UserId:" + userId;
             } else {
