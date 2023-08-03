@@ -1,4 +1,4 @@
-
+#pragma once
 #include <string>
 #include "../../config/Sensitive.h"
 
@@ -17,10 +17,11 @@ namespace JWT {
     class Payload {
         private:
             string username; 
+            int userId;
             int issuedAt; 
             int expiredAt;
         public:
-            Payload(string username, int iat, int expat): username(username), issuedAt(iat), expiredAt(expat) {};
+            Payload(string username, int iat, int expat, int userId=-1): username(username), issuedAt(iat), expiredAt(expat), userId(userId) {};
             string getBase64Encoded();
 
     };
@@ -41,5 +42,5 @@ namespace JWT {
         EXPIRED
     };
 
-    TOKEN_VERIFICATION_STATUS verifyToken(string jwt, string salt_selected=CREDENTIAL_SALT::ACCESS_TOKEN_SALT);
+    TOKEN_VERIFICATION_STATUS verifyToken(string jwt, string salt_selected=CREDENTIAL_SALT::ACCESS_TOKEN_SALT, int userId=-1);
 }

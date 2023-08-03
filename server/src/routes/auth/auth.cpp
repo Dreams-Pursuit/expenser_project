@@ -11,7 +11,7 @@
 
 #include "../../modeles/Expenser.h"
 
-void AuthRoutes::getRoutes(crow::App<crow::CORSHandler>& app, sqlpp::postgresql::connection& db) {
+void AuthRoutes::getRoutes(crow::App<crow::CORSHandler, AuthedUser>& app, sqlpp::postgresql::connection& db) {
     CROW_ROUTE(app,"/auth/login").methods("POST"_method)
     ([&db](const crow::request& req){
         crow::json::rvalue x;
@@ -46,8 +46,8 @@ void AuthRoutes::getRoutes(crow::App<crow::CORSHandler>& app, sqlpp::postgresql:
                         std::cout << "Access token was issued at: " << issuedAt << " and expired at: " << expiredAtAccess << std::endl;
                         std::cout << "Refresh token was issued at: " << issuedAt << " and expired at: " << expiredAtRefresh << std::endl;
 
-                        JWT::Payload jwtPayload = JWT::Payload(row.EMAIL, issuedAt, expiredAtAccess);
-                        JWT::Payload jwtPayloadRefresh = JWT::Payload(row.EMAIL, issuedAt, expiredAtRefresh);
+                        JWT::Payload jwtPayload = JWT::Payload(row.EMAIL, issuedAt, expiredAtAccess, row.USERID);
+                        JWT::Payload jwtPayloadRefresh = JWT::Payload(row.EMAIL, issuedAt, expiredAtRefresh, row.USERID);
                         JWT::Token token = JWT::Token(jwtPayload);
                         JWT::Token tokenRefresh = JWT::Token(jwtPayloadRefresh);
 
@@ -56,6 +56,7 @@ void AuthRoutes::getRoutes(crow::App<crow::CORSHandler>& app, sqlpp::postgresql:
                         std::string refresh_token = tokenRefresh.generateJWTToken(CREDENTIAL_SALT::REFRESH_TOKEN_SALT);
 
                         crow::json::wvalue resBody;
+                        resBody["userId"] = row.USERID;
                         resBody["access_token"] = access_token;
                         resBody["refresh_token"] = refresh_token;
                         resBody["valid_for"] = JWT::Token::TOKEN_LIVE_TIME;

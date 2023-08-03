@@ -2,16 +2,14 @@
 #include "TransactionRoutes.h"
 #include "../../modeles/Expenser.h"
 
-void TransactionRoutes::getRoutes(crow::App<crow::CORSHandler>& app, sqlpp::postgresql::connection& db) {
-    CROW_ROUTE(app, "/user/transactions").methods("POST"_method) //Get transaction list
-    ([&db,this](const crow::request& req) {
-        crow::json::rvalue x; //rvalue - read value
-        try{
-                x = crow::json::load(req.body);
-        }
-        catch(...){
-            return crow::response(400, "probably json syntax error");
-        }
+void TransactionRoutes::getRoutes(crow::App<crow::CORSHandler, AuthedUser>& app, sqlpp::postgresql::connection& db) {
+    CROW_ROUTE(app, "/user/transactions")
+    .methods("POST"_method) //Get transaction list
+    .CROW_MIDDLEWARES(app, AuthedUser)
+    ([&db,&app,this](const crow::request& req) {
+        auto ctx = app.get_context<AuthedUser>(req);
+        crow::json::rvalue x = ctx.parsedX; 
+        
         if(x.has("user_id")){
             using namespace Expenser;
             TransactionsList trans;
@@ -39,15 +37,13 @@ void TransactionRoutes::getRoutes(crow::App<crow::CORSHandler>& app, sqlpp::post
         return crow::response(200, "Your list of transactions is currently empty");
     });// Get transaction list
 
-    CROW_ROUTE(app, "/user/transactions/add").methods("POST"_method) //Add transaction
-    ([&db](const crow::request& req) {
-        crow::json::rvalue x;
-        try{
-                x = crow::json::load(req.body);
-        }
-        catch(...){
-            return crow::response(400, "probably json syntax error");
-        }
+    CROW_ROUTE(app, "/user/transactions/add")
+    .methods("POST"_method) //Add transaction
+    .CROW_MIDDLEWARES(app, AuthedUser)
+    ([&db, &app](const crow::request& req) {
+        auto ctx = app.get_context<AuthedUser>(req);
+        crow::json::rvalue x = ctx.parsedX; 
+
         if(x.has("user_id") && x.has("category") && x.has("amount") && x.has("currency") && x.has("date")){
             using namespace Expenser;
             TransactionsList trans;
@@ -66,15 +62,13 @@ void TransactionRoutes::getRoutes(crow::App<crow::CORSHandler>& app, sqlpp::post
         return crow::response(401, "Failed to add a new transaction");
     });//Add transaction
 
-    CROW_ROUTE(app, "/user/transactions/modify").methods("POST"_method) //Modify transaction
-    ([&db](const crow::request& req) {
-        crow::json::rvalue x;
-        try{
-                x = crow::json::load(req.body);
-        }
-        catch(...){
-            return crow::response(400, "probably json syntax error");
-        }
+    CROW_ROUTE(app, "/user/transactions/modify")
+    .methods("POST"_method) //Modify transaction
+    .CROW_MIDDLEWARES(app, AuthedUser)
+    ([&db, &app](const crow::request& req) {
+        auto ctx = app.get_context<AuthedUser>(req);
+        crow::json::rvalue x = ctx.parsedX; 
+
         if(x.has("transaction_id") && x.has("category") && x.has("amount") && x.has("currency") && x.has("date") && x.has("description")){
             using namespace Expenser;
             TransactionsList trans;
@@ -106,15 +100,13 @@ void TransactionRoutes::getRoutes(crow::App<crow::CORSHandler>& app, sqlpp::post
         return crow::response(401, "Failed to update a transaction");
     });//Modify transaction
 
-    CROW_ROUTE(app, "/user/transactions/delete").methods("POST"_method) //Delete transaction
-    ([&db](const crow::request& req) {
-        crow::json::rvalue x;
-        try{
-                x = crow::json::load(req.body);
-        }
-        catch(...){
-            return crow::response(400, "probably json syntax error");
-        }
+    CROW_ROUTE(app, "/user/transactions/delete")
+    .methods("POST"_method) //Delete transaction
+    .CROW_MIDDLEWARES(app, AuthedUser)
+    ([&db, &app](const crow::request& req) {
+        auto ctx = app.get_context<AuthedUser>(req);
+        crow::json::rvalue x = ctx.parsedX; 
+
         if(x.has("transaction_id")){
             using namespace Expenser;
             TransactionsList trans;

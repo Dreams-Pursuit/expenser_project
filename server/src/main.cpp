@@ -17,7 +17,7 @@ namespace sql = sqlpp::postgresql;
 
 int main() {
 
-    crow::App<crow::CORSHandler> app;
+    crow::App<crow::CORSHandler, AuthedUser> app;
     auto config = std::make_shared<sql::connection_config>();
     config->host = DB_CREDENTIALS::HOST;
     config->user = DB_CREDENTIALS::USER;
@@ -35,6 +35,13 @@ int main() {
     authr.getRoutes(app,db);
     transr.getRoutes(app, db);
     formr.getRoutes(app, db);
+
+    CROW_ROUTE(app, "/with_middleware")
+    .methods("POST"_method)
+    .CROW_MIDDLEWARES(app, AuthedUser)
+    ([]() {
+        return "Hello world!";
+    });
 
     app.port(18080).multithreaded().run();
     return 0;

@@ -13,7 +13,7 @@ std::string JWT::JWTHeader::getBase64Encoded() {
 }
 
 std::string JWT::Payload::getBase64Encoded() {
-    return Base64EncDec::getBase64("{\"username\":\"" + username + "\",\"issuedAt\":"+ std::to_string(issuedAt) + ",\"expiredAt\":"+ std::to_string(expiredAt) + "}");
+    return Base64EncDec::getBase64("{\"username\":\"" + username + "\",\"userId\":\"" + std::to_string(userId)+ "\",\"issuedAt\":"+ std::to_string(issuedAt) + ",\"expiredAt\":"+ std::to_string(expiredAt) + "}");
 }
 
 
@@ -25,7 +25,7 @@ std::string JWT::Token::generateJWTToken(std::string selected_salt) {
     return headerBase64 + "." + payloadBase64 + "." + hashed;
 }
 
-JWT::TOKEN_VERIFICATION_STATUS JWT::verifyToken(std::string jwt, std::string selected_salt) {
+JWT::TOKEN_VERIFICATION_STATUS JWT::verifyToken(std::string jwt, std::string selected_salt, int userId) {
     int end = jwt.find(".");
     std::vector<std::string> jwtSeparated;
     while (end != -1) {
@@ -48,11 +48,15 @@ JWT::TOKEN_VERIFICATION_STATUS JWT::verifyToken(std::string jwt, std::string sel
 
     const int now = static_cast<long int> (time(NULL));
     const int tokenExpiredAt(x["expiredAt"]);
+    const int userIdP(x["userId"]);
 
     if (!(x.has("expiredAt") && now < tokenExpiredAt)) { // Checks whether it is an expired token
         std::cout << "Error: Expired token" << std::endl;
         return JWT::TOKEN_VERIFICATION_STATUS::EXPIRED;
-    } 
+    }  else if (x.has("userId") && userIdP != -1 && userIdP != userId) {
+        std::cout << "UserId of the token and the requested userId are not the same" << std::endl;
+        return JWT::TOKEN_VERIFICATION_STATUS::INVALID;
+    }
 
     std::string hashed = Hash::hashYourData(jwtSeparated[0] + "." + jwtSeparated[1], selected_salt);
     std::cout << "Are tokens equal: " << (hashed == jwtSeparated[2]) << std::endl;
