@@ -17,11 +17,12 @@ namespace JWT {
     class Payload {
         private:
             string username; 
+            string tokenPriviliges;
             int userId;
             int issuedAt; 
             int expiredAt;
         public:
-            Payload(string username, int iat, int expat, int userId=-1): username(username), issuedAt(iat), expiredAt(expat), userId(userId) {};
+            Payload(string username, int iat, int expat, int userId=-1, string tokenPriviliges="full"): username(username), issuedAt(iat), expiredAt(expat), userId(userId), tokenPriviliges(tokenPriviliges) {};
             string getBase64Encoded();
 
     };
@@ -42,5 +43,13 @@ namespace JWT {
         EXPIRED
     };
 
-    TOKEN_VERIFICATION_STATUS verifyToken(string jwt, string salt_selected=CREDENTIAL_SALT::ACCESS_TOKEN_SALT, int userId=-1);
+    class TokenVerificationResponse {
+        const TOKEN_VERIFICATION_STATUS status;
+        const string priviligesType;
+        const int userId;
+
+        TokenVerificationResponse(TOKEN_VERIFICATION_STATUS status, string privType="invalid", int userId=-1): status(status), priviligesType(privType), userId(userId) {}
+    };
+
+    TOKEN_VERIFICATION_STATUS verifyToken(string jwt, string salt_selected=CREDENTIAL_SALT::ACCESS_TOKEN_SALT, int userId=-1, string tokenPrivilagesType="full");
 }

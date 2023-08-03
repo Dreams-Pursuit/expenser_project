@@ -57,6 +57,7 @@ void AuthRoutes::getRoutes(crow::App<crow::CORSHandler, AuthedUser>& app, sqlpp:
 
                         crow::json::wvalue resBody;
                         resBody["userId"] = row.USERID;
+                        resBody["username"] = row.EMAIL;
                         resBody["access_token"] = access_token;
                         resBody["refresh_token"] = refresh_token;
                         resBody["valid_for"] = JWT::Token::TOKEN_LIVE_TIME;
