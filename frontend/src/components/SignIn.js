@@ -12,18 +12,47 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 
+
 import Copyright from './Copyright';
+import useAuth from '../hooks/useAuth';
+import { useNavigate, useLocation } from "react-router-dom";
+import axios from "../api/axios";
 
-
+const LOGIN_PATH = "/auth/login";
 
 export default function SignIn() {
-  const handleSubmit = (event) => {
+  const { auth, setAuth } = useAuth();
+
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || '/';
+
+  const userRef = React.useRef();
+  const errRef = React.useRef();
+
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    const formedData = new FormData(event.currentTarget);
+    const data = {
+      email: formedData.get('email'),
+      password: formedData.get('password'),
+      grant_type: "password"
+    };
+    console.log(data);
+
+    try {
+      const response = await axios.post(LOGIN_PATH, JSON.stringify(data), { 
+        headers: {
+          "Content-Type": "text/plain"
+        }
+      });
+      console.log(auth); //Response 
+      setAuth({ ...response.data });
+      navigate("/dashboard", {replace: true});
+    } catch (err) {
+        console.log(err); // Handling required
+    }
   };
 
   return (
