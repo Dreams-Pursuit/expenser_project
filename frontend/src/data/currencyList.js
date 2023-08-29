@@ -166,7 +166,6 @@ const currencyList = [
     {name: "Yemeni Rial", code: "YER"},
     {name: "Zambian Kwacha", code: "ZMK"},
     {name: "Zimbabwean dollar", code: "ZWL"},
-    {name: "", code: ""}
 ];
 
 

@@ -8,6 +8,7 @@ import Error from './components/ErrorPage';
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import FormGenerator from "./components/dashboard/formGenerator/FormGenerator";
 import Reports from "./components/dashboard/Reports/Reports";
+import AddExpenseForm from "./components/form/AddExpenseForm";
 
 
 
@@ -38,6 +39,10 @@ const router = createBrowserRouter([
   {
     path: "/singup",
     element: <SignUp />
+  },
+  {
+    path: "/add-transaction",
+    element: <AddExpenseForm />
   }
 ])
 function App() {

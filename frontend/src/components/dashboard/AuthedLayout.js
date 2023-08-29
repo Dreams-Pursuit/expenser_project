@@ -65,7 +65,7 @@ const AppBar = styled(MuiAppBar, {
   
 
 export default function AuthedLayout({children, title}) {
-    const [open, setOpen] = React.useState(true);
+    const [open, setOpen] = React.useState(false);
     const toggleDrawer = () => {
         setOpen(!open);
     };

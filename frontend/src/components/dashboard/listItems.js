@@ -29,7 +29,9 @@ export default function Navigation() {
         </ListItemIcon>
         <ListItemText primary="Dashboard" />
       </ListItemButton>
-      <ListItemButton>
+      <ListItemButton onClick={() => {
+        navigate("/reports", {replace: true});
+        }}>
         <ListItemIcon>
           <BarChartIcon />
         </ListItemIcon>
