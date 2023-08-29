@@ -4,7 +4,13 @@ const AuthContext = createContext({});
 
 
 export function AuthProvider({ children }) {
-    const [auth, setAuth] = useState({});
+    const [auth, setAuthOrg] = useState(localStorage.authObj ? JSON.parse(localStorage.authObj) : {});
+    function setAuth(obj) {
+        localStorage.authObj = JSON.stringify(obj);
+        setAuthOrg(obj);
+    }
+
+    //StorageClear
     return (
         <AuthContext.Provider value={{auth, setAuth}}>
             { children }

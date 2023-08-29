@@ -6,6 +6,8 @@ import './styles/App.css';
 import Error from './components/ErrorPage';
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import FormGenerator from "./components/dashboard/formGenerator/FormGenerator";
+import Reports from "./components/dashboard/Reports/Reports";
 
 
 
@@ -17,10 +19,18 @@ const router = createBrowserRouter([
       {
         path: "dashboard",
         element: <Dashboard />
+      },
+      {
+        path: "generate-form",
+        element: <FormGenerator />
+      },
+      {
+        path: "reports",
+        element: <Reports />
       }
     ],
     errorElement: <Error/>
-  }, 
+  },
   {
     path: "/login",
     element: <SignIn />
