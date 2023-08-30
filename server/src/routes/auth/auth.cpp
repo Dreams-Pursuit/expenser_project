@@ -72,15 +72,14 @@ void AuthRoutes::getRoutes(crow::App<crow::CORSHandler, AuthedUser>& app, sqlpp:
             }
             return crow::response(400, "Invalid request. The field password or email is absent");
         } else if (grant_type == "access_token" && x.has("access_token")) {
+            std::string userId(x["userId"]);
             std::string access_token (x["access_token"]);
-            if (JWT::verifyToken(access_token) == JWT::TOKEN_VERIFICATION_STATUS::VALID) {
+            if (JWT::verifyToken(access_token,stoi(userId)) == JWT::TOKEN_VERIFICATION_STATUS::VALID) {
                 return crow::response(200, "OK. Valid token"); 
             } else if (JWT::verifyToken(access_token) == JWT::TOKEN_VERIFICATION_STATUS::EXPIRED) {
                 return crow::response(406, "Token is expired"); 
             }
-        } ;
-        
-
+        };
         return crow::response(403, "Invalid credentials");
     });
 

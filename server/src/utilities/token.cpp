@@ -28,7 +28,7 @@ std::string JWT::Token::generateJWTToken(std::string selected_salt) {
     return headerBase64 + "." + payloadBase64 + "." + hashed;
 }
 
-JWT::TOKEN_VERIFICATION_STATUS JWT::verifyToken(std::string jwt, std::string selected_salt, int expectedUserId, std::string expectedTokenPrivilagesType) {
+JWT::TOKEN_VERIFICATION_STATUS JWT::verifyToken(std::string jwt, int expectedUserId, std::string selected_salt, std::string expectedTokenPrivilagesType) {
     int end = jwt.find(".");
     std::vector<std::string> jwtSeparated;
     while (end != -1) {
@@ -59,6 +59,9 @@ JWT::TOKEN_VERIFICATION_STATUS JWT::verifyToken(std::string jwt, std::string sel
         return JWT::TOKEN_VERIFICATION_STATUS::EXPIRED;
     }  else if (x.has("userId") && userIdP != -1 && userIdP != expectedUserId) {
         std::cout << "UserId of the token and the requested userId are not the same" << std::endl;
+        std::cout << x["userId"] << std::endl;
+        std::cout << expectedUserId << std::endl;
+        std::cout << userIdP << std::endl;
         return JWT::TOKEN_VERIFICATION_STATUS::INVALID;
     } else if (privilagesType != "full" && privilagesType != expectedTokenPrivilagesType) {
         std::cout << "The token does not have the right priviliges" << std::endl;

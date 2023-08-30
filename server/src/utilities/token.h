@@ -51,5 +51,5 @@ namespace JWT {
         TokenVerificationResponse(TOKEN_VERIFICATION_STATUS status, string privType="invalid", int userId=-1): status(status), priviligesType(privType), userId(userId) {}
     };
 
-    TOKEN_VERIFICATION_STATUS verifyToken(string jwt, string salt_selected=CREDENTIAL_SALT::ACCESS_TOKEN_SALT, int expectedUserId=-1, string expectedTokenPrivilagesType="full");
+    TOKEN_VERIFICATION_STATUS verifyToken(string jwt, int expectedUserId=-1, string salt_selected=CREDENTIAL_SALT::ACCESS_TOKEN_SALT, string expectedTokenPrivilagesType="full");
 }

@@ -17,7 +17,7 @@ void Form::getRoutes(crow::App<crow::CORSHandler, AuthedUser>& app, sqlpp::postg
             std::string userId (x["user_id"]);
             std::string access_token (x["access_token"]);
 
-            if (JWT::verifyToken(access_token, CREDENTIAL_SALT::ACCESS_TOKEN_SALT, stoi(userId)) != JWT::TOKEN_VERIFICATION_STATUS::VALID) return crow::response(403, "Invalid access_token");
+            if (JWT::verifyToken(access_token, stoi(userId), CREDENTIAL_SALT::ACCESS_TOKEN_SALT) != JWT::TOKEN_VERIFICATION_STATUS::VALID) return crow::response(403, "Invalid access_token");
             const std::time_t issuedAt = std::time(nullptr);
             const std::time_t expiredAt = std::time(nullptr) + pow(60, 4);
 
