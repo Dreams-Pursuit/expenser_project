@@ -9,7 +9,6 @@ void TransactionRoutes::getRoutes(crow::App<crow::CORSHandler, AuthedUser>& app,
     ([&db,&app,this](const crow::request& req) {
         auto ctx = app.get_context<AuthedUser>(req);
         crow::json::rvalue x = ctx.parsedX; 
-        
         if(x.has("user_id")){
             using namespace Expenser;
             TransactionsList trans;

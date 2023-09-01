@@ -21,14 +21,19 @@ std::string JWT::Payload::getBase64Encoded() {
 std::string JWT::Token::generateJWTToken(std::string selected_salt) {
     std::string headerBase64 = header.getBase64Encoded();
     std::string payloadBase64 = payload.getBase64Encoded();
-    // std::cout << "Header: " + headerBase64;
-    // std::cout << "Payload: " + payloadBase64;
+    std::cout << "Header: " + headerBase64;
+    std::cout << "Payload: " + payloadBase64;
     std::string hashed = Hash::hashYourData(header.getBase64Encoded() + "." + payload.getBase64Encoded(), selected_salt);
     // std::cout << "Generated Token: " + headerBase64 + "." + payloadBase64 + "." + hashed;
     return headerBase64 + "." + payloadBase64 + "." + hashed;
 }
 
 JWT::TOKEN_VERIFICATION_STATUS JWT::verifyToken(std::string jwt, int expectedUserId, std::string selected_salt, std::string expectedTokenPrivilagesType) {
+    int index = jwt.find("\\n");
+    while(index != -1){
+        jwt.replace(index,2,"\n");
+        index = jwt.find("\\n");
+    }
     int end = jwt.find(".");
     std::vector<std::string> jwtSeparated;
     while (end != -1) {

@@ -15,8 +15,10 @@ void AuthRoutes::getRoutes(crow::App<crow::CORSHandler, AuthedUser>& app, sqlpp:
     CROW_ROUTE(app,"/auth/login").methods("POST"_method)
     ([&db](const crow::request& req){
         crow::json::rvalue x;
-        try{    
-                std::cout << req.body << std::endl;
+        try{
+                for(auto& i : req.headers){
+                    std::cout << i.first << "   " << '"' <<i.second << '"' << std::endl;
+                }
                 x = crow::json::load(req.body);
         }
         catch(...){
