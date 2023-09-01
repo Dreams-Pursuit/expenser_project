@@ -16,9 +16,6 @@ void AuthRoutes::getRoutes(crow::App<crow::CORSHandler, AuthedUser>& app, sqlpp:
     ([&db](const crow::request& req){
         crow::json::rvalue x;
         try{
-                for(auto& i : req.headers){
-                    std::cout << i.first << "   " << '"' <<i.second << '"' << std::endl;
-                }
                 x = crow::json::load(req.body);
         }
         catch(...){
@@ -73,12 +70,13 @@ void AuthRoutes::getRoutes(crow::App<crow::CORSHandler, AuthedUser>& app, sqlpp:
                 }
             }
             return crow::response(400, "Invalid request. The field password or email is absent");
-        } else if (grant_type == "access_token" && x.has("access_token")) {
+        } else if (grant_type == "access_token") {
+            std::string auth = req.get_header_value("Authorization");
+            if(auth == "")return crow::response(403, "Invalid credentials");
             std::string userId(x["userId"]);
-            std::string access_token (x["access_token"]);
-            if (JWT::verifyToken(access_token,stoi(userId)) == JWT::TOKEN_VERIFICATION_STATUS::VALID) {
+            if (JWT::verifyToken(auth,stoi(userId)) == JWT::TOKEN_VERIFICATION_STATUS::VALID) {
                 return crow::response(200, "OK. Valid token"); 
-            } else if (JWT::verifyToken(access_token) == JWT::TOKEN_VERIFICATION_STATUS::EXPIRED) {
+            } else if (JWT::verifyToken(auth,stoi(userId)) == JWT::TOKEN_VERIFICATION_STATUS::EXPIRED) {
                 return crow::response(406, "Token is expired"); 
             }
         };

@@ -29,19 +29,21 @@ std::string JWT::Token::generateJWTToken(std::string selected_salt) {
 }
 
 JWT::TOKEN_VERIFICATION_STATUS JWT::verifyToken(std::string jwt, int expectedUserId, std::string selected_salt, std::string expectedTokenPrivilagesType) {
-    int index = jwt.find("\\n");
+    int index = jwt.find(" ");
+    jwt = jwt.substr(index + 1,jwt.length());
+    index = jwt.find("\\n");
     while(index != -1){
         jwt.replace(index,2,"\n");
         index = jwt.find("\\n");
     }
-    int end = jwt.find(".");
+    index = jwt.find(".");
     std::vector<std::string> jwtSeparated;
-    while (end != -1) {
-        jwtSeparated.push_back(jwt.substr(0, end));
-        jwt.erase(jwt.begin(), jwt.begin() + end + 1);
-        end = jwt.find(".");
+    while (index != -1) {
+        jwtSeparated.push_back(jwt.substr(0, index));
+        jwt.erase(jwt.begin(), jwt.begin() + index + 1);
+        index = jwt.find(".");
     }
-    jwtSeparated.push_back(jwt.substr(0, end));
+    jwtSeparated.push_back(jwt.substr(0, index));
     if (jwtSeparated.size() < 3) return JWT::TOKEN_VERIFICATION_STATUS::INVALID;
 
     crow::json::rvalue x;
@@ -66,7 +68,7 @@ JWT::TOKEN_VERIFICATION_STATUS JWT::verifyToken(std::string jwt, int expectedUse
         std::cout << "UserId of the token and the requested userId are not the same" << std::endl;
         std::cout << x["userId"] << std::endl;
         std::cout << expectedUserId << std::endl;
-        std::cout << userIdP << std::endl;
+        //std::cout << userIdP << std::endl;
         return JWT::TOKEN_VERIFICATION_STATUS::INVALID;
     } else if (privilagesType != "full" && privilagesType != expectedTokenPrivilagesType) {
         std::cout << "The token does not have the right priviliges" << std::endl;
@@ -74,6 +76,10 @@ JWT::TOKEN_VERIFICATION_STATUS JWT::verifyToken(std::string jwt, int expectedUse
     }
 
     std::string hashed = Hash::hashYourData(jwtSeparated[0] + "." + jwtSeparated[1], selected_salt);
+    std::cout << jwtSeparated[0] << std::endl;
+    std::cout << jwtSeparated[1] << std::endl;
+    std::cout << jwtSeparated[2] << std::endl;
+    std::cout << hashed << std::endl;
     std::cout << "Are tokens equal: " << (hashed == jwtSeparated[2]) << std::endl;
     return hashed == jwtSeparated[2] ? JWT::TOKEN_VERIFICATION_STATUS::VALID : JWT::TOKEN_VERIFICATION_STATUS::INVALID;
 }

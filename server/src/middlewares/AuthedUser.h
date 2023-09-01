@@ -24,8 +24,6 @@ struct AuthedUser : crow::ILocalMiddleware {
             res.code = 400;
             res.end();
         } else {
-            int index = ctx.authToken.find(" ");
-            ctx.authToken = ctx.authToken.substr(index + 1,ctx.authToken.length());
             std::string userId(ctx.parsedX["user_id"]);
             if (JWT::verifyToken(ctx.authToken, stoi(userId), CREDENTIAL_SALT::ACCESS_TOKEN_SALT) == JWT::TOKEN_VERIFICATION_STATUS::VALID) {
                 CROW_LOG_INFO << "Token:" + ctx.authToken;
