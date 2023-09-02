@@ -6,6 +6,7 @@ import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Title from './Title';
+import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 
 // Generate Order Data
 function createData(id, category, date, amount, currency, description) {
@@ -68,6 +69,49 @@ function preventDefault(event) {
 }
 
 export default function Orders() {
+  const [transactions, setTransactions] = React.useState(rows);
+
+  const axiosPrivate = useAxiosPrivate();
+
+  React.useEffect(() => {
+    let isMounted = true;
+    const controller = new AbortController();
+
+    const getTransactions = async () => {
+
+      try {
+        const response = await axiosPrivate.post('/user/transactions/', {
+          signal: controller.signal
+        });
+        console.log(response.data);
+        isMounted && setTransactions(response.data);
+      } catch (err) {
+        console.log("Get transaction error");
+        console.log(err);
+      }
+    }
+
+    const getMonthSumUp = async () => {
+      try {
+        const response = await axiosPrivate.post('/user/transactions/', {
+          signal: controller.signal
+        });
+        console.log(response.data);
+        isMounted && setTransactions(response.data);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    getTransactions();
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    }
+
+  },[]);
+
   return (
     <React.Fragment>
       <Title>Recent Expenses</Title>
@@ -81,8 +125,8 @@ export default function Orders() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
-            <TableRow key={row.id}>
+          {transactions.map((row, index) => (
+            <TableRow key={index}>
               <TableCell>{row.date}</TableCell>
               <TableCell>{row.category}</TableCell>
               <TableCell>{row.description}</TableCell>
