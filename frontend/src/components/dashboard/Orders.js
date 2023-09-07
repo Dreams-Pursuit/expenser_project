@@ -83,8 +83,8 @@ export default function Orders() {
         const response = await axiosPrivate.post('/user/transactions/', {
           signal: controller.signal
         });
-        console.log(response.data);
-        isMounted && setTransactions(response.data);
+        console.log(response);
+        // isMounted && setTransactions(response.data);
       } catch (err) {
         console.log("Get transaction error");
         console.log(err);

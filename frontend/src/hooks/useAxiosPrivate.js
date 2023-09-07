@@ -9,10 +9,12 @@ export default function useAxiosPrivate() {
         const requestIntercept = axiosPrivate.interceptors.request.use((config) => {
             if (!config.headers['Authorization']) {
                 // config.headers['Authorization'] = `Bearer ${auth.access_token}`
-                console.log(config.data);
-                config.data = {};
-                config.data.userId = `${auth.userId}`;
-                config.data.acccess_token =`${auth.acccess_token}`;
+                
+                config.data = {
+                    "userId": `${auth.userId}`
+                };
+                // config.data.userId = `${auth.userId}`;
+                config.headers['Authorization'] =`Bearer ${auth.access_token}`;
                 console.log(config.data);
             }
             return config;
