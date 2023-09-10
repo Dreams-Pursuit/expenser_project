@@ -18,7 +18,7 @@ import Container from "@mui/material/Container";
 
 import Copyright from "./Copyright";
 
-import currencyList from "../data/currencyList";
+import CURRENCY_LIST from "../data/currencyList";
 
 export default function SignUp() {
   const [currency, setCurrency] = React.useState("UAH");
@@ -28,10 +28,10 @@ export default function SignUp() {
     event.preventDefault();
     const formedData = new FormData(event.currentTarget);
     const data = {
-      email: data.get("email"),
-      password: data.get("password"),
-      first_name: data.get("firstName"),
-      last_name: data.get("lastName"),
+      email: formedData.get("email"),
+      password: formedData.get("password"),
+      first_name: formedData.get("firstName"),
+      last_name: formedData.get("lastName"),
     };
     console.log(data);
 
@@ -142,7 +142,7 @@ export default function SignUp() {
                       id="main-currency-select"
                       label="Main Currency"
                     >
-                      {currencyList.map((curr) => {
+                      {CURRENCY_LIST.map((curr) => {
                         return (
                           <MenuItem value={curr.code}>{curr.name}</MenuItem>
                         );

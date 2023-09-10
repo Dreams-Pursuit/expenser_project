@@ -30,5 +30,6 @@ std::string Hash::hashYourData(std::string plaintext, std::string salt_selected)
 	
 	encoder.Put(derived, sizeof(derived));
 	encoder.MessageEnd();
+	std::cout << "Result of the hashYourData function: " << result << std::endl; 
 	return result;
 }

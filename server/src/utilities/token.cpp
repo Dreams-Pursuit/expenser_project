@@ -21,14 +21,23 @@ std::string JWT::Payload::getBase64Encoded() {
 std::string JWT::Token::generateJWTToken(std::string selected_salt) {
     std::string headerBase64 = header.getBase64Encoded();
     std::string payloadBase64 = payload.getBase64Encoded();
-    std::cout << "Header: " + headerBase64;
-    std::cout << "Payload: " + payloadBase64;
-    std::string hashed = Hash::hashYourData(header.getBase64Encoded() + "." + payload.getBase64Encoded(), selected_salt);
-    // std::cout << "Generated Token: " + headerBase64 + "." + payloadBase64 + "." + hashed;
-    return headerBase64 + "." + payloadBase64 + "." + hashed;
+    std::string combinedtoHash = header.getBase64Encoded() + '.' + payload.getBase64Encoded();
+    std::string hashed = Hash::hashYourData(combinedtoHash, selected_salt);
+
+    std::string result = headerBase64 + '.' + payloadBase64 + '.' + hashed;
+
+    //Cleaning the new lines 
+    int index = result.find("\n");
+    while(index != -1){
+        result.replace(index,2,"");
+        index = result.find("\n");
+    }
+    std::cout << "Generated Token: " + result;
+    return result;
 }
 
 JWT::TOKEN_VERIFICATION_STATUS JWT::verifyToken(std::string jwt, int expectedUserId, std::string selected_salt, std::string expectedTokenPrivilagesType) {
+    std::cout << "Received token: " << jwt << std::endl; 
     int index = jwt.find(" ");
     jwt = jwt.substr(index + 1,jwt.length());
     index = jwt.find("\\n");

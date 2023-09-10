@@ -1,4 +1,4 @@
-const currencyList = [
+const CURRENCY_LIST = [
     {name: "Afghan Afghani", code: "AFA"},
     {name: "Albanian Lek", code: "ALL"},
     {name: "Algerian Dinar", code: "DZD"},
@@ -169,4 +169,4 @@ const currencyList = [
 ];
 
 
-export default currencyList;
+export default CURRENCY_LIST;

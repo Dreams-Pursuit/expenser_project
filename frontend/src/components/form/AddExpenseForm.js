@@ -1,23 +1,53 @@
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import * as React from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
+import FormControl from "@mui/material/FormControl";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import Link from "@mui/material/Link";
+
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import PaymentsIcon from '@mui/icons-material/Payments';
 
+
 import Copyright from "../Copyright";
+import CATEGORIES from "../../data/categories";
+import CURRENCY_LIST from "../../data/currencyList";
+import dayjs from 'dayjs';
 // import useAuth from '../hooks/useAuth';
 // import { useNavigate, useLocation } from "react-router-dom";
 // import axios from "../api/axios";
 
 export default function AddExpenseForm() {
+  const [category, setCategory] = React.useState("None");
+  const [currency, setCurrency] = React.useState("UAH");
+  const [date, setDate] = React.useState(dayjs())
+  // const [update, setUpdate] = React.useState
+
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    const formedData = new FormData(event.currentTarget);
+    const data = { 
+      amount: formedData.get("amount"),
+      category: category,
+      description: formedData.get("description"),
+      date: date,
+      currency: currency
+    }
+    if (!data.amount) alert("Enter the amount!");
+    console.log(data);
+  }
+
   return (
     <React.Fragment>
       <Container component="main" maxWidth="xs">
@@ -38,54 +68,88 @@ export default function AddExpenseForm() {
           </Typography>
           <Box
             component="form"
-            // onSubmit={handleSubmit}
+            onSubmit={handleSubmit}
             noValidate
             sx={{ mt: 1 }}
           >
+            <Box
+                sx={{ mt: 2 }}
+              >
+              <FormControl fullWidth>
+                <InputLabel id="category-label" required>
+                  Category
+                </InputLabel>
+                <Select
+                  labelId="category-label"
+                  value={category}
+                  onChange={(e) => {
+                    setCategory(e.target.value);
+                  }}
+                  id="category-select"
+                  label="Category"
+                >
+                  {CATEGORIES.map((cat) => {
+                    return (
+                      <MenuItem value={cat}>{cat}</MenuItem>
+                    );
+                  })}
+                </Select>
+              </FormControl>
+            </Box>
+            <Box
+            sx={{ mt: 2 }}
+            >
+              <FormControl fullWidth>
+                    <InputLabel id="currency-select-label" required>
+                      Currency
+                    </InputLabel>
+                    <Select
+                      labelId="currency-select-label"
+                      value={currency}
+                      onChange={(e) => {
+                        setCurrency(e.target.value);
+                      }}
+                      id="currency-select"
+                      label="Currency"
+                    >
+                      {CURRENCY_LIST.map((curr) => {
+                        return (
+                          <MenuItem value={curr.code}>{curr.name}</MenuItem>
+                        );
+                      })}
+                    </Select>
+                  </FormControl>
+            </Box>
+
             <TextField
               margin="normal"
               required
               fullWidth
-              id="email"
-              label="Enter Category"
-              name="email"
-              autoComplete="email"
-              autoFocus
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
+              name="amount"
               label="Amount"
-              id="password"
-              autoComplete="current-password"
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Currency"
-              id="password"
+              type="number"
+              id="amount"
               autoComplete="current-password"
             />
             <TextField
               margin="normal"
               fullWidth
-              name="password"
+              name="description"
               label="Description"
               id="password"
               autoComplete="current-password"
             />
-            <TextField
-              margin="normal"
-              fullWidth
-              name="password"
-              label="Date"
-              id="password"
-              autoComplete="current-password"
-            />
+            <Box
+            sx={{ mt: 2 }}
+            >
+              <FormControl fullWidth>
+                    <DatePicker 
+                    value={date}
+                    onChange={(newDate) => setDate(newDate)}
+                    label="Date"/>
+                  </FormControl>
+            </Box>
+            
             <Button
               type="submit"
               fullWidth
