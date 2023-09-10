@@ -32,6 +32,7 @@ struct AuthedUser : crow::ILocalMiddleware {
                 CROW_LOG_INFO << "Token:" + ctx.authToken;
                 CROW_LOG_INFO << "UserId:" + userId;
             } else {
+                std::cout << "Chel, you haven't pass even the middleware's check";
                 res.code = 403;
                 res.end();
             }
