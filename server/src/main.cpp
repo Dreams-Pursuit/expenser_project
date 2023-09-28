@@ -16,8 +16,17 @@
 namespace sql = sqlpp::postgresql;
 
 int main() {
-
+    //Providing middlewares
     crow::App<crow::CORSHandler, AuthedUser> app;
+
+    //CORS setup
+    auto& cors = app.get_middleware<crow::CORSHandler>();
+    cors
+        .global()
+            .headers("Access-Control-Allow-Origin", "*") //DEVELOPMENT
+            .methods("POST"_method, "GET"_method);
+
+    //Database connection
     auto config = std::make_shared<sql::connection_config>();
     config->host = DB_CREDENTIALS::HOST;
     config->user = DB_CREDENTIALS::USER;

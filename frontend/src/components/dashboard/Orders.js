@@ -80,7 +80,7 @@ export default function Orders() {
     const getTransactions = async () => {
 
       try {
-        const response = await axiosPrivate.post('/user/transactions/', {
+        const response = await axiosPrivate.post('/user/transactions', {
           signal: controller.signal
         });
         console.log(response);
@@ -93,7 +93,7 @@ export default function Orders() {
 
     const getMonthSumUp = async () => {
       try {
-        const response = await axiosPrivate.post('/user/transactions/', {
+        const response = await axiosPrivate.post('/user/transactions', {
           signal: controller.signal
         });
         console.log(response.data);
