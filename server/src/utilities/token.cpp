@@ -32,7 +32,7 @@ std::string JWT::Token::generateJWTToken(std::string selected_salt) {
     //Cleaning the new lines 
     int index = result.find("\n");
     while(index != -1){
-        result.replace(index, 1, "");
+        result.replace(index, 1, "'");
         index = result.find("\n");
     }
     std::cout << "Generated Token: " + result;
@@ -43,10 +43,15 @@ JWT::TOKEN_VERIFICATION_STATUS JWT::verifyToken(std::string jwt, int expectedUse
     std::cout << "Received token: " << jwt << std::endl; 
     int index = jwt.find(" ");
     jwt = jwt.substr(index + 1,jwt.length());
-    index = jwt.find("\\n");
+    // index = jwt.find("\n");
+    // while(index != -1){
+    //     jwt.replace(index,1,"");
+    //     index = jwt.find("\n");
+    // }
+    index = jwt.find("'");
     while(index != -1){
-        jwt.replace(index,2,"\n");
-        index = jwt.find("\\n");
+        jwt.replace(index,1,"\n");
+        index = jwt.find("'");
     }
     index = jwt.find(".");
     std::vector<std::string> jwtSeparated;
@@ -91,12 +96,13 @@ JWT::TOKEN_VERIFICATION_STATUS JWT::verifyToken(std::string jwt, int expectedUse
     }
 
     std::string hashed = Hash::hashYourData(jwtSeparated[0] + "." + jwtSeparated[1], selected_salt);
-    std::cout << jwtSeparated[0] << std::endl;
-    std::cout << jwtSeparated[1] << std::endl;
-    std::cout << jwtSeparated[2] << std::endl;
+    
+    std::cout << "jwt0" << jwtSeparated[0] << std::endl;
+    std::cout << "jwt1" << jwtSeparated[1] << std::endl;
+    std::cout << "jwt2" << jwtSeparated[2] << std::endl;
     std::cout << hashed << std::endl;
     std::cout << "Are tokens equal: " << (hashed == jwtSeparated[2]) << std::endl;
     // VERY DANGEROUS !!!!!!!!!!!!!!!!
-    // return hashed == jwtSeparated[2] ? JWT::TOKEN_VERIFICATION_STATUS::VALID : JWT::TOKEN_VERIFICATION_STATUS::INVALID;
-    return JWT::TOKEN_VERIFICATION_STATUS::VALID;
+    return hashed == jwtSeparated[2] ? JWT::TOKEN_VERIFICATION_STATUS::VALID : JWT::TOKEN_VERIFICATION_STATUS::INVALID;
+    //return JWT::TOKEN_VERIFICATION_STATUS::VALID;
 }
