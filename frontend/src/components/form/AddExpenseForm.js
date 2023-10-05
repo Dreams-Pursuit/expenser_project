@@ -30,7 +30,10 @@ import useAuth from '../../hooks/useAuth';
 // import { useNavigate, useLocation } from "react-router-dom";
 // import axios from "../api/axios";
 
-
+// function formatDate(date) {
+//   console.log(date.format("YYYY-MM-DD HH:mm:ss"));
+//   console.log(dayjs().format("HH:mm:ss"));
+// }
 
 export default function AddExpenseForm() {
   const { id, token } = useParams();
@@ -50,12 +53,13 @@ export default function AddExpenseForm() {
     const formedData = new FormData(event.currentTarget);
     console.log("User id from the url");
     console.log(id);
+
     const data = { 
       user_id: id,
       amount: formedData.get("amount"),
       category: category,
       description: formedData.get("description"),
-      date: date,
+      date: date.format("YYYY-MM-DD HH:mm:ss"),
       currency: currency
     }
     if (!data.amount) { 
