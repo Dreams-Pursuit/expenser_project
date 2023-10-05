@@ -3,7 +3,7 @@ import useAuth from "../hooks/useAuth";
 
 const UnauthedOnly = () => {
     const { auth }  = useAuth();
-    const location = useLocation();
+    const location = useLocation(); 
 
     return (
         auth?.username

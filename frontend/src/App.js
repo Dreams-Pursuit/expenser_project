@@ -41,7 +41,7 @@ const router = createBrowserRouter([
     element: <SignUp />
   },
   {
-    path: "/add-transaction",
+    path: "/add-transaction/:id/:token",
     element: <AddExpenseForm />
   }
 ])

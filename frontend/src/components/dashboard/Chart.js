@@ -2,33 +2,72 @@ import * as React from 'react';
 import { useTheme } from '@mui/material/styles';
 import { LineChart, Line, XAxis, YAxis, Label, ResponsiveContainer } from 'recharts';
 import Title from './Title';
+import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 
-// Generate Sales Data
+// Generate Data
 function createData(time, amount) {
   return { time, amount };
 }
 
-const data = [
-  createData('00:00', 0),
-  createData('03:00', 300),
-  createData('06:00', 600),
-  createData('09:00', 800),
-  createData('12:00', 1500),
-  createData('15:00', 2000),
-  createData('18:00', 2400),
-  createData('21:00', 2400),
-  createData('24:00', undefined),
-];
 
 export default function Chart() {
+  const [transactions, setTransactions] = React.useState([
+    createData('00:00', 0),
+    createData('03:00', 300),
+    createData('06:00', 600),
+    createData('09:00', 800),
+    createData('12:00', 1500),
+    createData('15:00', 2000),
+    createData('18:00', 2400),
+    createData('21:00', 2400),
+    createData('24:00', undefined),
+  ]);
+
   const theme = useTheme();
+  const axiosPrivate = useAxiosPrivate();
+
+  function formData(data) {
+    console.log(data);
+    const dataArray = data.map((obj) => {
+      return createData(obj.date, obj.amount);
+    })
+    setTransactions(data);
+  }
+
+  React.useEffect(() => {
+    let isMounted = true;
+    const controller = new AbortController();
+
+    const getTransactions = async () => {
+      console.log("in getTran Charts");
+
+      try {
+        const response = await axiosPrivate.post('/user/transactions', {
+          signal: controller.signal
+        });
+        console.log("The request was completed");
+        isMounted && formData(response.data);
+      } catch (err) {
+        console.log("Get transaction error");
+        console.log(err);
+      }
+    }
+
+    getTransactions();
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    }
+
+  },[]);
 
   return (
     <React.Fragment>
       <Title>Today</Title>
       <ResponsiveContainer>
         <LineChart
-          data={data}
+          data={transactions}
           margin={{
             top: 16,
             right: 16,

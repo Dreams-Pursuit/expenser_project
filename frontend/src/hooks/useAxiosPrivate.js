@@ -10,7 +10,8 @@ export default function useAxiosPrivate() {
             if (!config.headers['Authorization']) {
                 
                 config.data = {
-                    "userId": `${auth.userId}`
+                    username: `${auth.username}`,
+                    user_id: `${auth.userId}`
                 };
                 console.log(config.data);
                 console.log(auth.access_token);

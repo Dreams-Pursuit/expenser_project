@@ -7,6 +7,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Title from './Title';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
+import { useNavigate } from 'react-router-dom';
 
 // Generate Order Data
 function createData(id, category, date, amount, currency, description) {
@@ -72,38 +73,29 @@ export default function Orders() {
   const [transactions, setTransactions] = React.useState(rows);
 
   const axiosPrivate = useAxiosPrivate();
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     let isMounted = true;
     const controller = new AbortController();
 
     const getTransactions = async () => {
+      console.log("in getTrans");
 
       try {
         const response = await axiosPrivate.post('/user/transactions', {
           signal: controller.signal
         });
         console.log(response);
-        // isMounted && setTransactions(response.data);
+        isMounted && setTransactions(response.data);
       } catch (err) {
+        // navigate("/"); //Rewrite the authprovider to validate the session for the each page request
         console.log("Get transaction error");
         console.log(err);
       }
     }
 
-    const getMonthSumUp = async () => {
-      try {
-        const response = await axiosPrivate.post('/user/transactions', {
-          signal: controller.signal
-        });
-        console.log(response.data);
-        isMounted && setTransactions(response.data);
-      } catch (err) {
-        console.log(err);
-      }
-    }
-
-    getTransactions();
+    // getTransactions();
 
     return () => {
       isMounted = false;

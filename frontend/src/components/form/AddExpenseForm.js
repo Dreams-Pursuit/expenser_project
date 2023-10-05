@@ -23,29 +23,62 @@ import Copyright from "../Copyright";
 import CATEGORIES from "../../data/categories";
 import CURRENCY_LIST from "../../data/currencyList";
 import dayjs from 'dayjs';
+import { useParams } from 'react-router-dom';
+import axios from "../../api/axios"
+import useAuth from '../../hooks/useAuth';
 // import useAuth from '../hooks/useAuth';
 // import { useNavigate, useLocation } from "react-router-dom";
 // import axios from "../api/axios";
 
+
+
 export default function AddExpenseForm() {
+  const { id, token } = useParams();
+  const { auth, setAuth } = useAuth();
+  // const axiosPrivate = useAxiosPrivate()
+
+
   const [category, setCategory] = React.useState("None");
   const [currency, setCurrency] = React.useState("UAH");
   const [date, setDate] = React.useState(dayjs())
   // const [update, setUpdate] = React.useState
 
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
+    
     const formedData = new FormData(event.currentTarget);
+    console.log("User id from the url");
+    console.log(id);
     const data = { 
+      user_id: id,
       amount: formedData.get("amount"),
       category: category,
       description: formedData.get("description"),
       date: date,
       currency: currency
     }
-    if (!data.amount) alert("Enter the amount!");
+    if (!data.amount) { 
+      alert("Enter the amount!");
+      return;
+    }
     console.log(data);
+    console.log("Received token - " + token);
+
+    try {
+      const response = await axios.post('/user/transactions/add', data, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+
+      });
+      console.log(response);
+      console.log("The request was completed");
+    } catch (err) {
+      alert("Submit Error");
+      console.log(err);
+    }
+
   }
 
   return (
