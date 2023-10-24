@@ -19,25 +19,38 @@ import Container from "@mui/material/Container";
 import Copyright from "./Copyright";
 
 import CURRENCY_LIST from "../data/currencyList";
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import axios from "../api/axios";
+
+const SING_UP_PATH = "/auth/register";
 
 export default function SignUp() {
   const [currency, setCurrency] = React.useState("UAH");
   const [success, setSuccess] = React.useState(false); // in development
 
-  const handleSubmit = (event) => {
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const formedData = new FormData(event.currentTarget);
+    console.log(event.currentTarget);
     const data = {
-      email: formedData.get("email"),
-      password: formedData.get("password"),
-      first_name: formedData.get("firstName"),
-      last_name: formedData.get("lastName"),
+      "email": formedData.get("email"),
+      "password": formedData.get("password"),
+      "main_currency": formedData.get("main-currency-select"),
     };
     console.log(data);
 
     try {
+      const response = await axios.post(SING_UP_PATH, data, {
+        headers: {
+        "Content-Type": "text/plain"
+      }});
+      setSuccess(true);
+      
     } catch (err) {
-      console.log(err); //Handle required
+      console.log(err.response.data); //Handle required
+      alert(err.response.data);
+      
     }
   };
 
@@ -55,10 +68,12 @@ export default function SignUp() {
             }}
           ></Box>
           <Typography component="h1" variant="h5">
-              The sing up was successful
+              The sign up was successful
           </Typography>
           <Typography component="h4" variant="p">
-              Sing in
+              <Link href="/login" variant="body2">
+                  Sign in
+              </Link>
           </Typography>
 
         </Container>
@@ -86,27 +101,7 @@ export default function SignUp() {
               sx={{ mt: 3 }}
             >
               <Grid container spacing={2}>
-                {/* <Grid item xs={12} sm={6}>
-                  <TextField
-                    autoComplete="given-name"
-                    name="firstName"
-                    required
-                    fullWidth
-                    id="firstName"
-                    label="First Name"
-                    autoFocus
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    required
-                    fullWidth
-                    id="lastName"
-                    label="Last Name"
-                    name="lastName"
-                    autoComplete="family-name"
-                  />
-                </Grid> */}
+              
                 <Grid item xs={12}>
                   <TextField
                     required
@@ -140,6 +135,7 @@ export default function SignUp() {
                         setCurrency(e.target.value);
                       }}
                       id="main-currency-select"
+                      name="main-currency-select"
                       label="Main Currency"
                     >
                       {CURRENCY_LIST.map((curr) => {
@@ -155,7 +151,7 @@ export default function SignUp() {
                     control={
                       <Checkbox value="allowExtraEmails" color="primary" />
                     }
-                    label="I want to receive inspiration, marketing promotions and updates via email."
+                    label="I want to receive inspiration via email."
                   />
                 </Grid>
               </Grid>

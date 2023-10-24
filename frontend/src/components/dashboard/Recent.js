@@ -14,63 +14,14 @@ function createData(id, category, date, amount, currency, description) {
   return { id, category, date, description, currency, amount };
 }
 
-const rows = [
-  createData(
-    64,
-    "Food",
-    "2023-05-03 14:23:43",
-    120,
-    "UAH",
-    "Carrefour"
-  ),
-  createData(
-    64,
-    "Food",
-    "2023-05-03 14:23:43",
-    120,
-    "UAH",
-    "Carrefour"
-  ),
-  createData(
-    64,
-    "Food",
-    "2023-05-03 14:23:43",
-    120,
-    "UAH",
-    "Carrefour"
-  ),
-  createData(
-    64,
-    "Food",
-    "2023-05-03 14:23:43",
-    120,
-    "UAH",
-    "Carrefour"
-  ),
-  createData(
-    64,
-    "Food",
-    "2023-05-03 14:23:43",
-    120,
-    "UAH",
-    "Carrefour"
-  ),
-  createData(
-    64,
-    "Food",
-    "2023-05-03 14:23:43",
-    120,
-    "UAH",
-    "Carrefour"
-  ),
-];
+
 
 function preventDefault(event) {
   event.preventDefault();
 }
 
-export default function Orders() {
-  const [transactions, setTransactions] = React.useState(rows);
+export default function Recent() {
+  const [transactions, setTransactions] = React.useState([]);
 
   const axiosPrivate = useAxiosPrivate();
   const navigate = useNavigate();
@@ -87,7 +38,7 @@ export default function Orders() {
           signal: controller.signal
         });
         console.log(response);
-        isMounted && setTransactions(response.data);
+        isMounted && setTransactions(response.data.slice(response.data.length - 8 , response.data.length));
       } catch (err) {
         // navigate("/"); //Rewrite the authprovider to validate the session for the each page request
         console.log("Get transaction error");
@@ -95,7 +46,7 @@ export default function Orders() {
       }
     }
 
-    // getTransactions();
+    getTransactions();
 
     return () => {
       isMounted = false;
@@ -106,7 +57,7 @@ export default function Orders() {
 
   return (
     <React.Fragment>
-      <Title>Recent Expenses</Title>
+      <Title>Recent</Title>
       <Table size="small">
         <TableHead>
           <TableRow>

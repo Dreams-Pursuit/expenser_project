@@ -5,9 +5,9 @@ import useAuth from "../hooks/useAuth";
 const RequireAuth = () => {
     const { auth }  = useAuth();
     const location = useLocation();
-    // useEffect(() => {
-    //         console.log(location);
-    // })
+    useEffect(() => {
+            console.log(location);
+    }, [auth])
     return (
         (auth?.username && location.pathname != "/")
         ? <Outlet/>

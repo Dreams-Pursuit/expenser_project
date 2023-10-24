@@ -28,10 +28,31 @@ export default function Chart() {
 
   function formData(data) {
     console.log(data);
-    const dataArray = data.map((obj) => {
-      return createData(obj.date, obj.amount);
-    })
-    setTransactions(data);
+    const dataMap = new Map();
+
+    // const dataArray = data.map((obj) => {
+    //   return createData(obj.date.slice(0, 10), obj.amount);
+    // });
+
+    data.map((obj) => {
+      const date = obj.date.slice(0, 10);
+      if (dataMap.has(date)) {
+        dataMap.set(date, dataMap.get(date) + obj.amount);
+      } else {
+        dataMap.set(date, obj.amount)
+      }
+    });
+    let dataArray = []
+    dataMap.forEach((value, key) => {
+      // console.log()
+      dataArray.push(createData(key, value));
+    });
+    // console.log("dataMap");
+    // console.log(dataMap);
+
+    // console.log("dataArray");
+    // console.log(dataArray);
+    setTransactions(dataArray);
   }
 
   React.useEffect(() => {
@@ -64,7 +85,7 @@ export default function Chart() {
 
   return (
     <React.Fragment>
-      <Title>Today</Title>
+      <Title>Overview</Title>
       <ResponsiveContainer>
         <LineChart
           data={transactions}
@@ -93,7 +114,7 @@ export default function Chart() {
                 ...theme.typography.body1,
               }}
             >
-              Sales ($)
+              Expenses
             </Label>
           </YAxis>
           <Line

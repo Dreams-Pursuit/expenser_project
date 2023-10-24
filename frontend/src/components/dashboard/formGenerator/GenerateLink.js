@@ -19,7 +19,7 @@ export default function GenerateLink() {
         try {
             const response = await axiosPrivate.post('/form/generate_url');
             console.log(response);
-            setGeneratedLink(BASE_URL_FRONT + "add-transaction/" + response.data.url);
+            setGeneratedLink(BASE_URL_FRONT + response.data.url);
           } catch (err) {
             // navigate("/"); //Rewrite the authprovider to validate the session for the each page request
             console.log("Get transaction error");

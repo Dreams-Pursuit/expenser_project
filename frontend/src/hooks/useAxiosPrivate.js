@@ -1,9 +1,10 @@
 import { useEffect } from "react"; 
 import axios, { axiosPrivate } from "../api/axios"
 import useAuth from "./useAuth";
+import { BASE_URL_FRONT } from "../constants";
 
 export default function useAxiosPrivate() {
-    const { auth } = useAuth();
+    const { auth, setAuth } = useAuth();
 
     useEffect(() => {
         const requestIntercept = axiosPrivate.interceptors.request.use((config) => {
@@ -27,12 +28,18 @@ export default function useAxiosPrivate() {
             response => response, 
             (error) => {
                 const prevRequest = error?.config;
-                if (error?.response?.status === 403 & !prevRequest?.sent) {
-                    prevRequest.sent = true;
-                    // const newAccessToken = new refresh(); // To be finished on the server side
-                    // prevRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
-                    return axiosPrivate(prevRequest);
+                if (error?.response?.status === 403) {
+                    setAuth({});
+                    alert("403. Invalid key");
+                    window.location.href = BASE_URL_FRONT;
                 }
+                // if (error?.response?.status === 403 & !prevRequest?.sent) {
+                //     prevRequest.sent = true;
+                //     // const newAccessToken = new refresh(); // To be finished on the server side
+                //     // prevRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+                    
+                //     return axiosPrivate(prevRequest);
+                // }
                 return Promise.reject(error);
             }
         )
