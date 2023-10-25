@@ -28,7 +28,7 @@ void Form::getRoutes(crow::App<crow::CORSHandler, AuthedUser>& app, sqlpp::postg
             std::string outToken = token.generateJWTToken();
 
             crow::json::wvalue resBody;
-            resBody["url"] = outToken;
+            resBody["url"] = "add-transaction/" + userId + "/" + outToken;
             return crow::response(resBody);
         }
 

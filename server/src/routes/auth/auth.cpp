@@ -40,7 +40,7 @@ void AuthRoutes::getRoutes(crow::App<crow::CORSHandler, AuthedUser>& app, sqlpp:
                     const auto& row = response.front();
                     if(verifyPassword(password,row.PASSWORD)) {
                         const std::time_t issuedAt = std::time(nullptr);
-                        const std::time_t expiredAtAccess = std::time(nullptr) + 600;
+                        const std::time_t expiredAtAccess = std::time(nullptr) + 86400;
                         const std::time_t expiredAtRefresh = std::time(nullptr) + 86400;
                         std::cout << "Access token was issued at: " << issuedAt << " and expired at: " << expiredAtAccess << std::endl;
                         std::cout << "Refresh token was issued at: " << issuedAt << " and expired at: " << expiredAtRefresh << std::endl;

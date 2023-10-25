@@ -52,6 +52,9 @@ int main() {
         return "Hello world!";
     });
 
-    app.port(18080).multithreaded().run();
+    app
+    .port(18080)
+    // .multithreaded()
+    .run();
     return 0;
 }
