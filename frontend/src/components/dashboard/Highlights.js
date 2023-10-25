@@ -10,7 +10,12 @@ function preventDefault(event) {
 
 export default function Deposits() {
 
-  const [highlight, setHighlight] = React.useState({});
+  const [highlight, setHighlight] = React.useState([
+    {
+      currency: "UAH",
+      amount: 0
+    }
+  ]);
   const axiosPrivate = useAxiosPrivate();
 
 
@@ -19,7 +24,13 @@ export default function Deposits() {
     const controller = new AbortController();
 
     function formData(response) {
-      const slicedData = response.slice(response.length - 8, response.length - 1);
+      console.log("Response in Highlight");
+      console.log(response);
+      if (response.length === 0) return;
+
+      const lb = response.length - 7;
+      const lowerBound = (lb < 0) ? 0 : lb;
+      const slicedData = response.slice(lowerBound, response.length);
 
       let maxIndex = 0;
       slicedData.forEach((element, index) => {
@@ -28,15 +39,11 @@ export default function Deposits() {
         }
       });
       setHighlight(slicedData[maxIndex])
-      // console.log("Sliced data");
-      // console.log(slicedData);
-      // setHighlight(Math.max(...slicedData));
 
     }
 
     const getTransactions = async () => {
       console.log("in getTran Charts");
-
       try {
         const response = await axiosPrivate.post('/user/transactions', {
           signal: controller.signal

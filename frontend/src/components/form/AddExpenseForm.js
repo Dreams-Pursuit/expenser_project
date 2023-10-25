@@ -77,7 +77,7 @@ export default function AddExpenseForm() {
 
       });
       console.log(response);
-      console.log("The request was completed");
+      alert("Your expense was added");
     } catch (err) {
       alert("Submit Error");
       console.log(err);

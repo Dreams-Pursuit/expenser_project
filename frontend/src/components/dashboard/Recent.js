@@ -24,7 +24,6 @@ export default function Recent() {
   const [transactions, setTransactions] = React.useState([]);
 
   const axiosPrivate = useAxiosPrivate();
-  const navigate = useNavigate();
 
   React.useEffect(() => {
     let isMounted = true;
@@ -37,10 +36,12 @@ export default function Recent() {
         const response = await axiosPrivate.post('/user/transactions', {
           signal: controller.signal
         });
-        console.log(response);
-        isMounted && setTransactions(response.data.slice(response.data.length - 8 , response.data.length));
+        const lb = response.data.length - 8;
+        const lowerBound = (lb < 0) ? 0 : lb;
+        // console.log(response.data.slice(lowerBound , response.data.length));
+        isMounted && setTransactions(response.data.slice(lowerBound , response.data.length));
       } catch (err) {
-        // navigate("/"); //Rewrite the authprovider to validate the session for the each page request
+
         console.log("Get transaction error");
         console.log(err);
       }
