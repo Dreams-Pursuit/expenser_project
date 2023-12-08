@@ -40,7 +40,7 @@ std::string JWT::Token::generateJWTToken(std::string selected_salt) {
 }
 
 JWT::TOKEN_VERIFICATION_STATUS JWT::verifyToken(std::string jwt, int expectedUserId, std::string selected_salt, std::string expectedTokenPrivilagesType) {
-    std::cout << "Received token: " << jwt << std::endl; 
+    //std::cout << "Received token: " << jwt << std::endl; 
     int index = jwt.find(" ");
     jwt = jwt.substr(index + 1,jwt.length());
     // index = jwt.find("\n");
@@ -72,7 +72,6 @@ JWT::TOKEN_VERIFICATION_STATUS JWT::verifyToken(std::string jwt, int expectedUse
         x = crow::json::load(Base64EncDec::decodeBase64(jwtSeparated[1]));
     }
     catch(...){
-        std::cout << "Fuck off" << std::endl;
         return JWT::TOKEN_VERIFICATION_STATUS::INVALID;
     }
 
@@ -102,7 +101,6 @@ JWT::TOKEN_VERIFICATION_STATUS JWT::verifyToken(std::string jwt, int expectedUse
     std::cout << "jwt2" << jwtSeparated[2] << std::endl;
     std::cout << hashed << std::endl;
     std::cout << "Are tokens equal: " << (hashed == jwtSeparated[2]) << std::endl;
-    // VERY DANGEROUS !!!!!!!!!!!!!!!!
     return hashed == jwtSeparated[2] ? JWT::TOKEN_VERIFICATION_STATUS::VALID : JWT::TOKEN_VERIFICATION_STATUS::INVALID;
     //return JWT::TOKEN_VERIFICATION_STATUS::VALID;
 }
