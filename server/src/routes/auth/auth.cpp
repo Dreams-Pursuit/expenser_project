@@ -33,7 +33,6 @@ void AuthRoutes::getRoutes(crow::App<crow::CORSHandler, AuthedUser>& app, sqlpp:
                 std::string email (x["email"]);
                 std::string password (x["password"]);
 
-                std::cout << "I'm here, catch me if you can" << std::endl;
 
                 auto response = db(select(all_of(acc)).from(acc).where(acc.EMAIL == email));
                 if(!response.empty()) {
